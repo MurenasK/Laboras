@@ -46,5 +46,49 @@ namespace Laboras
             return heroes.Count;
         }
 
+        public Heroes GetHero(int index)
+        {
+            if (index < 0 || index >= heroes.Count)
+            {
+                Console.WriteLine("Herojaus nėra :("); ;
+            }
+            return heroes[index];
+        }
+
+        public static HeroesRegister ReadHeroesFromFile(string filePath)
+        {
+            HeroesRegister register = new HeroesRegister();
+            string[] lines = File.ReadAllLines(filePath);
+            if(lines.Length < 3)
+            {
+                Console.WriteLine("Trūksta duomenų");
+            }
+            else
+            {
+                string race = lines[0];
+                string startingCity = lines[1];
+
+                for (int i = 2; i < lines.Length; i++)
+                {
+                    string[] Values = lines[i].Split(',');
+                    string name = Values[0];
+                    string @class = Values[1];
+                    int lifePoints = int.Parse(Values[2]);
+                    int mana = int.Parse(Values[3]);
+                    int dmgPoints = int.Parse(Values[4]);
+                    int defPoints = int.Parse(Values[5]);
+                    int power = int.Parse(Values[6]);
+                    int movement = int.Parse(Values[7]);
+                    int iQ = int.Parse(Values[8]);
+                    int specPower = int.Parse(Values[9]);
+                    Heroes hero = new Heroes(name, race, startingCity, @class, lifePoints, mana, dmgPoints, defPoints, power, movement, iQ, specPower);
+                    if (!register.Contains(hero))
+                    {
+                        register.AddHero(hero);
+                    }
+                }
+            }
+            return register;
+        }
     }
 }

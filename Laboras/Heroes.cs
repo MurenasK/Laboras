@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,6 +15,7 @@ namespace Laboras
     {
         public string Name { get; set; }
         public string Race { get; set; }
+        public string StartingCity { get; set; }
         public string Class { get; set; }
         public int LifePoints { get; set; }
         public int Mana { get; set; }
@@ -28,6 +31,7 @@ namespace Laboras
         /// </summary>
         public Heroes(string name,
                       string race,
+                      string startingCity,
                       string @class,
                       int lifePoints,
                       int mana, int dmgPoints,
@@ -39,6 +43,7 @@ namespace Laboras
         {
             Name = name;
             Race = race;
+            StartingCity = startingCity;
             Class = @class;
             LifePoints = lifePoints;
             Mana = mana;
