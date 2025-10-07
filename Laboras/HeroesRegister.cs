@@ -59,7 +59,7 @@ namespace Laboras
         {
             HeroesRegister register = new HeroesRegister();
             string[] lines = File.ReadAllLines(filePath);
-            if(lines.Length < 3)
+            if (lines.Length < 3)
             {
                 Console.WriteLine("Trūksta duomenų");
             }
@@ -67,10 +67,9 @@ namespace Laboras
             {
                 string race = lines[0];
                 string startingCity = lines[1];
-
                 for (int i = 2; i < lines.Length; i++)
                 {
-                    string[] Values = lines[i].Split(',');
+                    string[] Values = lines[i].Split(';');
                     string name = Values[0];
                     string @class = Values[1];
                     int lifePoints = int.Parse(Values[2]);
@@ -89,6 +88,63 @@ namespace Laboras
                 }
             }
             return register;
+        }
+
+        public static HeroesRegister ComboRegister(HeroesRegister reg1, HeroesRegister reg2)
+        {
+            HeroesRegister combinedRegister = new HeroesRegister();
+            for (int i = 0; i < reg1.HeroCount(); i++)
+            {
+                combinedRegister.AddHero(reg1.GetHero(i));
+            }
+            for (int i = 0; i < reg2.HeroCount(); i++)
+            {
+                combinedRegister.AddHero(reg2.GetHero(i));
+            }
+            return combinedRegister;
+        }
+
+        public List<Heroes> GetHeroesList()
+        {
+            return new List<Heroes>(heroes);
+        }
+
+        public static List<string> GetUniqueClasses(List<Heroes> heroes)
+        {
+            HashSet<string> uniqueClasses = new HashSet<string>();
+            foreach (var hero in heroes)
+            {
+                uniqueClasses.Add(hero.Class);
+            }
+            return uniqueClasses.ToList();
+        }
+
+        public static List<Heroes> GetStrongestHero(HeroesRegister register)
+        {
+            List<Heroes> heroes = register.GetHeroesList();
+            List<Heroes> strongestHeroes = new List<Heroes>();
+            if (heroes.Count == 0)
+            {
+                return strongestHeroes;
+            }
+            int highestPower = heroes[0].LifePoints + heroes[0].DefPoints - heroes[0].DmgPoints;
+            foreach (var hero in heroes)
+            {
+                int heroPower = hero.LifePoints + hero.DefPoints - hero.DmgPoints;
+                if (heroPower > highestPower)
+                {
+                    highestPower = heroPower;
+                }
+            }
+            foreach (var hero in heroes)
+            {
+                int heroPower = hero.LifePoints + hero.DefPoints - hero.DmgPoints;
+                if (heroPower == highestPower)
+                {
+                    strongestHeroes.Add(hero);
+                }
+            }
+            return strongestHeroes;
         }
     }
 }
