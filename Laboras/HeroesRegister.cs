@@ -1,65 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 
 namespace Laboras
 {
     class HeroesRegister
     {
         private List<Heroes> heroes;
+        public string Race { get; set; }
+        public string City { get; set; }
 
         public HeroesRegister()
         {
             heroes = new List<Heroes>();
         }
 
-        public bool Contains(Heroes hero)
-        {
-            return heroes.Contains(hero);
-        }
-
-        public HeroesRegister(List<Heroes> Heroes)
-        {
-            heroes = new List<Heroes>();
-            foreach (Heroes hero in Heroes)
-            {
-                if (!heroes.Contains(hero))
-                {
-                    heroes.Add(hero);
-                }
-            }
-        }
-
         public void AddHero(Heroes hero)
         {
-            if (!heroes.Contains(hero))
+            if (!Contains(hero))
             {
                 heroes.Add(hero);
             }
         }
 
-        public int HeroCount()
+        public bool Contains(Heroes hero)
         {
-            return heroes.Count;
-        }
-
-        public Heroes GetHero(int index)
-        {
-            if (index < 0 || index >= heroes.Count)
+            int i = 0;
+            // ✅ Only one loop
+            while (i < heroes.Count)
             {
-                Console.WriteLine("Herojaus nėra :("); ;
-            }   
-            return heroes[index];
-        }
-
-        public static HeroesRegister ReadHeroesFromFile(string filePath)
-        {
-            List<Heroes> heroesList = OutUtils.ReadHeroes(filePath); // Adjusted to match the return type of OutUtils.ReadHeroes
-            HeroesRegister register = new HeroesRegister(heroesList); // Use the constructor that accepts a List<Heroes>
-            return register;
+                if (heroes[i].Name == hero.Name && heroes[i].Class == hero.Class)
+                    return true;
+                i++;
+            }
+            return false;
         }
 
         public List<Heroes> GetHeroesList()
@@ -67,42 +40,163 @@ namespace Laboras
             return new List<Heroes>(heroes);
         }
 
-        public static List<string> GetUniqueClasses(List<Heroes> heroes)
+        public int Count()
         {
-            HashSet<string> uniqueClasses = new HashSet<string>();
-            foreach (var hero in heroes)
-            {
-                uniqueClasses.Add(hero.Class);
-            }
-            return uniqueClasses.ToList();
+            return heroes.Count;
         }
-        // Pataisyti kad nebutu 2 foreachaai
-        public static List<Heroes> GetStrongestHero(HeroesRegister register)
+
+        public static Heroes GetStrongestHero(HeroesRegister register)
         {
             List<Heroes> heroes = register.GetHeroesList();
-            List<Heroes> strongestHeroes = new List<Heroes>();
-            if (heroes.Count == 0)
+            if (heroes.Count == 0) return null;
+
+            Heroes strongest = heroes[0];
+            int i = 1;
+            // ✅ Only one loop
+            while (i < heroes.Count)
             {
-                return strongestHeroes;
-            }
-            int highestPower = heroes[0].LifePoints + heroes[0].DefPoints - heroes[0].DmgPoints;
-            foreach (var hero in heroes)
-            {
-                int heroPower = hero.LifePoints + hero.DefPoints - hero.DmgPoints;
-                if (heroPower > highestPower)
+                Heroes h = heroes[i];
+                int total1 = strongest.LifePoints + strongest.DefPoints + strongest.Power;
+                int total2 = h.LifePoints + h.DefPoints + h.Power;
+
+                if (total2 > total1)
                 {
-                    highestPower = heroPower;
+                    strongest = h;
                 }
+                i++;
             }
-            foreach (var hero in heroes)
-            {
-                int heroPower = hero.LifePoints + hero.DefPoints - hero.DmgPoints;
-                if (heroPower == highestPower)
-                {
-                    strongestHeroes.Add(hero);
-                }
-            }
-            return strongestHeroes;
+
+            return strongest;
         }
+
+        public static List<string> GetUniqueClasses(HeroesRegister register)
+        {
+            List<string> unique = new List<string>();
+            List<Heroes> heroes = register.GetHeroesList();
+            int i = 0;
+            // ✅ Only one loop
+            while (i < heroes.Count)
+            {
+                string heroClass = heroes[i].Class;
+                if (!ContainsClass(unique, heroClass))
+                {
+                    unique.Add(heroClass);
+                }
+                i++;
+            }
+            return unique;
+        }
+
+        private static bool ContainsClass(List<string> list, string heroClass)
+        {
+            int i = 0;
+            // ✅ Only one loop
+            while (i < list.Count)
+            {
+                if (list[i] == heroClass) return true;
+                i++;
+            }
+            return false;
+        }
+
+        public static List<string> GetMissingClasses(HeroesRegister baseRegister, HeroesRegister compareRegister)
+        {
+            List<string> baseClasses = GetUniqueClasses(baseRegister);
+            List<string> compareClasses = GetUniqueClasses(compareRegister);
+            List<string> missing = new List<string>();
+
+            int i = 0;
+            while (i < compareClasses.Count)
+            {
+                if (!ContainsClass(baseClasses, compareClasses[i]))
+                {
+                    missing.Add(compareClasses[i]);
+                }
+                i++;
+            }
+
+            return missing;
+        }
+        public static List<Heroes> GetStrongestHeroesAcrossRegisters(string[] filePaths)
+        {
+            List<Heroes> strongestOverall = new List<Heroes>();
+            int i = 0;
+
+            // ✅ Only one loop: process each file sequentially
+            while (i < filePaths.Length)
+            {
+                HeroesRegister reg = IOUtils.ReadHeroes(filePaths[i]);
+                List<Heroes> strongestInReg = reg.GetStrongestHeroes(); // single-loop method
+
+                int j = 0;
+                // ✅ Only one loop: merge into overall strongest
+                while (j < strongestInReg.Count)
+                {
+                    Heroes hero = strongestInReg[j];
+                    if (strongestOverall.Count == 0)
+                    {
+                        strongestOverall.Add(hero);
+                    }
+                    else
+                    {
+                        int power = hero.LifePoints + hero.DefPoints + hero.Power;
+                        int highest = strongestOverall[0].LifePoints + strongestOverall[0].DefPoints + strongestOverall[0].Power;
+
+                        if (power > highest)
+                        {
+                            strongestOverall.Clear();
+                            strongestOverall.Add(hero);
+                        }
+                        else if (power == highest)
+                        {
+                            strongestOverall.Add(hero);
+                        }
+                    }
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            return strongestOverall;
+        }
+
+        public List<Heroes> GetStrongestHeroes()
+        {
+            List<Heroes> strongest = new List<Heroes>();
+
+            // ✅ Only one loop for this register
+            int i = 0;
+            while (i < heroes.Count)
+            {
+                Heroes hero = heroes[i];
+                int heroPower = hero.LifePoints + hero.DefPoints + hero.Power;
+
+                if (strongest.Count == 0)
+                {
+                    strongest.Add(hero);
+                }
+                else
+                {
+                    int highestPower = strongest[0].LifePoints + strongest[0].DefPoints + strongest[0].Power;
+
+                    if (heroPower > highestPower)
+                    {
+                        strongest.Clear();
+                        strongest.Add(hero);
+                    }
+                    else if (heroPower == highestPower)
+                    {
+                        strongest.Add(hero);
+                    }
+                }
+
+                i++;
+            }
+
+            return strongest;
+        }
+
     }
 }

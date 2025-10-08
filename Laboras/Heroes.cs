@@ -15,8 +15,6 @@ namespace Laboras
     {
         public string Name { get; set; }
         public string Class { get; set; }
-        public string Race { get; set; }
-        public string StartingCity { get; set; }
         public int LifePoints { get; set; }
         public int Mana { get; set; }
         public int DmgPoints { get; set; }
@@ -49,6 +47,15 @@ namespace Laboras
             Movement = movement;
             IQ = iQ;
             SpecPower = specPower;
+        }
+
+        private List<HeroesGroup> groups = new List<HeroesGroup>();
+        public override string ToString()
+        {
+            return string.Format(
+                "|{0,-20}|{1,-15}|{2,20}|{3,10}|{4,15}|{5,8}|{6,10}|{7,6}|{8,6}|{9,15}|",
+                Name, Class, LifePoints, Mana, DmgPoints, DefPoints, Power, Movement, IQ, SpecPower
+            );
         }
     }
 }
