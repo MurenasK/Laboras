@@ -53,9 +53,27 @@ namespace Laboras
         public override string ToString()
         {
             return string.Format(
-                "|{0,-20}|{1,-15}|{2,20}|{3,10}|{4,15}|{5,8}|{6,10}|{7,6}|{8,6}|{9,15}|",
-                Name, Class, LifePoints, Mana, DmgPoints, DefPoints, Power, Movement, IQ, SpecPower
+                "|{0,-20}|{1,-15}|{2,20}|{3,10}|{4,15}" + 
+                "|{5,15}|{6,10}|{7,10}|{8,6}|{9,15}|",
+                Name, Class, LifePoints, Mana, DmgPoints, DefPoints,
+                Power, Movement, IQ, SpecPower
             );
         }
+
+        public int PowerScore()
+        {
+            return LifePoints + DefPoints + Power;
+        }
+
+        public bool IsStrongerThan(Heroes other)
+        {
+            return this.PowerScore() > other.PowerScore();
+        }
+
+        public bool IsEqualStrength(Heroes other)
+        {
+            return this.PowerScore() == other.PowerScore();
+        }
+
     }
 }

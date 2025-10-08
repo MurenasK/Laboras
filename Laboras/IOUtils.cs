@@ -7,8 +7,8 @@ namespace Laboras
 {
     class IOUtils
     {
-        // Print all hero registers into a single file, block by block
-        public static void PrintAllRegistersToFile(List<HeroesRegister> registers, string fileName)
+        public static void PrintAllRegistersToFile(List<HeroesRegister> registers,
+            string fileName)
         {
             List<string> lines = new List<string>();
             int i = 0;
@@ -17,21 +17,21 @@ namespace Laboras
                 HeroesRegister reg = registers[i];
                 List<Heroes> heroes = reg.GetHeroesList();
 
-                // Group header with Race and City
                 lines.Add(new string('-', 149));
                 lines.Add($"Rasė: {reg.Race}, Pradžios miestas: {reg.City}");
                 lines.Add(new string('-', 149));
 
-                // Column headers
-                lines.Add(string.Format("|{0,-20}|{1,-15}|{2,20}|{3,10}|{4,15}|{5,8}|{6,10}|{7,6}|{8,6}|{9,15}|",
-                    "Vardas", "Klasė", "Gyvybės taškai", "Ištvermė", "Atakos Taškai",
-                    "Gynybos taškai", "Galia", "Judėjimas", "IQ", "Spec. Galia"));
+                lines.Add(string.Format("|{0,-20}|{1,-15}|{2,20}|{3,10}|{4,15}" + 
+                    "|{5,15}|{6,10}|{7,10}|{8,6}|{9,15}|",
+                    "Vardas", "Klasė", "Gyvybės taškai", "Ištvermė",
+                    "Atakos Taškai", "Gynybos taškai", "Galia", "Judėjimas",
+                    "IQ", "Spec. Galia"));
                 lines.Add(new string('-', 149));
 
                 int j = 0;
                 while (j < heroes.Count)
                 {
-                    lines.Add(heroes[j].ToString()); // use ToString() from Heroes
+                    lines.Add(heroes[j].ToString()); 
                     j++;
                 }
 
@@ -41,15 +41,16 @@ namespace Laboras
 
             File.WriteAllLines(fileName, lines, Encoding.UTF8);
         }
-
-        // Print all unique classes across multiple registers
-        public static void PrintAllClassesToCSV(List<HeroesRegister> registers, string fileName)
+        public static void PrintAllClassesToCSV(List<HeroesRegister> registers,
+                                                                string fileName)
         {
             List<string> uniqueClasses = new List<string>();
             int i = 0;
             while (i < registers.Count)
             {
-                List<string> classes = HeroesRegister.GetUniqueClasses(registers[i]);
+                List<string> classes = HeroesRegister.GetUniqueClasses(
+                    registers[i]
+                    );
                 int j = 0;
                 while (j < classes.Count)
                 {
@@ -61,7 +62,7 @@ namespace Laboras
                 }
                 i++;
             }
-
+                                                                                  
             List<string> lines = new List<string> { "Klasės" };
             int k = 0;
             while (k < uniqueClasses.Count)
@@ -73,12 +74,14 @@ namespace Laboras
             File.WriteAllLines(fileName, lines, Encoding.UTF8);
         }
 
-        // Print missing classes between the first two registers
-        public static void PrintAllMissingClassesToCSV(List<HeroesRegister> registers, string fileName)
+        public static void PrintAllMissingClassesToCSV(
+            List<HeroesRegister> registers,
+            string fileName
+            )
         {
             if (registers.Count < 2)
             {
-                Console.WriteLine("Reikia bent dviejų registrų trūkstamų klasių palyginimui");
+                Console.WriteLine("Reikia bent dviejų registrų trūkstamų klasių");
                 return;
             }
 
@@ -94,7 +97,9 @@ namespace Laboras
             };
 
             int i = 0;
-            int max = missing1.Count > missing2.Count ? missing1.Count : missing2.Count;
+            int max = missing1.Count > missing2.Count ? 
+                missing1.Count : 
+                missing2.Count;
             while (i < max)
             {
                 string val1 = i < missing1.Count ? missing1[i] : "";
@@ -105,8 +110,6 @@ namespace Laboras
 
             File.WriteAllLines(fileName, lines, Encoding.UTF8);
         }
-
-        // Check if a value exists in a list (used for unique classes)
         private static bool ContainsClass(List<string> list, string value)
         {
             int i = 0;
@@ -117,8 +120,6 @@ namespace Laboras
             }
             return false;
         }
-
-        // Read heroes from a file into a HeroesRegister
         public static HeroesRegister ReadHeroes(string filePath)
         {
             string[] lines = File.ReadAllLines(filePath, Encoding.UTF8);
@@ -139,8 +140,10 @@ namespace Laboras
                 string[] values = lines[i].Split(';');
                 Heroes hero = new Heroes(
                     values[0], values[1],
-                    int.Parse(values[2]), int.Parse(values[3]), int.Parse(values[4]),
-                    int.Parse(values[5]), int.Parse(values[6]), int.Parse(values[7]),
+                    int.Parse(values[2]), int.Parse(values[3]),
+                    int.Parse(values[4]),
+                    int.Parse(values[5]), int.Parse(values[6]),
+                    int.Parse(values[7]),
                     int.Parse(values[8]), int.Parse(values[9])
                 );
                 register.AddHero(hero);
@@ -149,11 +152,10 @@ namespace Laboras
 
             return register;
         }
-
-        // Print strongest hero(s) across multiple files
         public static void PrintStrongestHeroesAcrossFiles(string[] filePaths)
         {
-            List<Heroes> strongest = HeroesRegister.GetStrongestHeroesAcrossRegisters(filePaths);
+            List<Heroes> strongest = HeroesRegister.
+                GetStrongestHeroesAcrossRegisters(filePaths);
 
             if (strongest.Count == 0)
             {
@@ -163,7 +165,8 @@ namespace Laboras
 
             Console.WriteLine("Stipriausias(i) herojus(-iai) tarp visų grupių:");
             Console.WriteLine(new string('-', 149));
-            Console.WriteLine("|{0,-20}|{1,-15}|{2,20}|{3,10}|{4,15}|{5,8}|{6,10}|{7,6}|{8,6}|{9,15}|",
+            Console.WriteLine("|{0,-20}|{1,-15}|{2,20}|{3,10}|{4,15}" + 
+                "|{5,15}|{6,10}|{7,10}|{8,6}|{9,15}|",
                 "Vardas", "Klasė", "Gyvybės taškai", "Ištvermė", "Atakos Taškai",
                 "Gynybos taškai", "Galia", "Judėjimas", "IQ", "Spec. Galia");
             Console.WriteLine(new string('-', 149));
