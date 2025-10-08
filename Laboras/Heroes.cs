@@ -14,9 +14,9 @@ namespace Laboras
     class Heroes
     {
         public string Name { get; set; }
+        public string Class { get; set; }
         public string Race { get; set; }
         public string StartingCity { get; set; }
-        public string Class { get; set; }
         public int LifePoints { get; set; }
         public int Mana { get; set; }
         public int DmgPoints { get; set; }
@@ -30,8 +30,6 @@ namespace Laboras
         /// Appends charasteristic to a hero
         /// </summary>
         public Heroes(string name,
-                      string race,
-                      string startingCity,
                       string @class,
                       int lifePoints,
                       int mana, int dmgPoints,
@@ -42,8 +40,6 @@ namespace Laboras
                       int specPower)
         {
             Name = name;
-            Race = race;
-            StartingCity = startingCity;
             Class = @class;
             LifePoints = lifePoints;
             Mana = mana;

@@ -51,57 +51,15 @@ namespace Laboras
             if (index < 0 || index >= heroes.Count)
             {
                 Console.WriteLine("Herojaus nėra :("); ;
-            }
+            }   
             return heroes[index];
         }
 
         public static HeroesRegister ReadHeroesFromFile(string filePath)
         {
-            HeroesRegister register = new HeroesRegister();
-            string[] lines = File.ReadAllLines(filePath);
-            if (lines.Length < 3)
-            {
-                Console.WriteLine("Trūksta duomenų");
-            }
-            else
-            {
-                string race = lines[0];
-                string startingCity = lines[1];
-                for (int i = 2; i < lines.Length; i++)
-                {
-                    string[] Values = lines[i].Split(';');
-                    string name = Values[0];
-                    string @class = Values[1];
-                    int lifePoints = int.Parse(Values[2]);
-                    int mana = int.Parse(Values[3]);
-                    int dmgPoints = int.Parse(Values[4]);
-                    int defPoints = int.Parse(Values[5]);
-                    int power = int.Parse(Values[6]);
-                    int movement = int.Parse(Values[7]);
-                    int iQ = int.Parse(Values[8]);
-                    int specPower = int.Parse(Values[9]);
-                    Heroes hero = new Heroes(name, race, startingCity, @class, lifePoints, mana, dmgPoints, defPoints, power, movement, iQ, specPower);
-                    if (!register.Contains(hero))
-                    {
-                        register.AddHero(hero);
-                    }
-                }
-            }
+            List<Heroes> heroesList = OutUtils.ReadHeroes(filePath); // Adjusted to match the return type of OutUtils.ReadHeroes
+            HeroesRegister register = new HeroesRegister(heroesList); // Use the constructor that accepts a List<Heroes>
             return register;
-        }
-
-        public static HeroesRegister ComboRegister(HeroesRegister reg1, HeroesRegister reg2)
-        {
-            HeroesRegister combinedRegister = new HeroesRegister();
-            for (int i = 0; i < reg1.HeroCount(); i++)
-            {
-                combinedRegister.AddHero(reg1.GetHero(i));
-            }
-            for (int i = 0; i < reg2.HeroCount(); i++)
-            {
-                combinedRegister.AddHero(reg2.GetHero(i));
-            }
-            return combinedRegister;
         }
 
         public List<Heroes> GetHeroesList()
@@ -118,7 +76,7 @@ namespace Laboras
             }
             return uniqueClasses.ToList();
         }
-
+        // Pataisyti kad nebutu 2 foreachaai
         public static List<Heroes> GetStrongestHero(HeroesRegister register)
         {
             List<Heroes> heroes = register.GetHeroesList();
