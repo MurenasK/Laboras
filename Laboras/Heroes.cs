@@ -48,8 +48,10 @@ namespace Laboras
             IQ = iQ;
             SpecPower = specPower;
         }
-
-        private List<HeroesGroup> groups = new List<HeroesGroup>();
+        /// <summary>
+        /// To string override
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return string.Format(
@@ -59,17 +61,28 @@ namespace Laboras
                 Power, Movement, IQ, SpecPower
             );
         }
-
+        /// <summary>
+        /// Calculates power score
+        /// </summary>
+        /// <returns></returns>
         public int PowerScore()
         {
             return LifePoints + DefPoints + Power;
         }
-
+        /// <summary>
+        /// Checks if one hero is stronger than another
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool IsStrongerThan(Heroes other)
         {
             return this.PowerScore() > other.PowerScore();
         }
-
+        /// <summary>
+        /// Checks if two heroes are of equal strength
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool IsEqualStrength(Heroes other)
         {
             return this.PowerScore() == other.PowerScore();

@@ -7,6 +7,11 @@ namespace Laboras
 {
     class IOUtils
     {
+        /// <summary>
+        /// Prints all registers to a single text file
+        /// </summary>
+        /// <param name="registers"></param>
+        /// <param name="fileName"></param>
         public static void PrintAllRegistersToFile(List<HeroesRegister> registers,
             string fileName)
         {
@@ -41,28 +46,17 @@ namespace Laboras
 
             File.WriteAllLines(fileName, lines, Encoding.UTF8);
         }
-        public static void PrintAllClassesToCSV(List<HeroesRegister> registers,
-                                                                string fileName)
+        /// <summary>
+        /// Prints all unique classes from all registers to a CSV file
+        /// </summary>
+        /// <param name="registers"></param>
+        /// <param name="fileName"></param>
+        public static void PrintAllClassesToCSV(
+            List<HeroesRegister> registers, string fileName)
         {
-            List<string> uniqueClasses = new List<string>();
-            int i = 0;
-            while (i < registers.Count)
-            {
-                List<string> classes = HeroesRegister.GetUniqueClasses(
-                    registers[i]
-                    );
-                int j = 0;
-                while (j < classes.Count)
-                {
-                    if (!ContainsClass(uniqueClasses, classes[j]))
-                    {
-                        uniqueClasses.Add(classes[j]);
-                    }
-                    j++;
-                }
-                i++;
-            }
-                                                                                  
+            List<string> uniqueClasses = HeroesRegister.GetAllUniqueClasses(
+                registers);
+
             List<string> lines = new List<string> { "Klasės" };
             int k = 0;
             while (k < uniqueClasses.Count)
@@ -74,52 +68,72 @@ namespace Laboras
             File.WriteAllLines(fileName, lines, Encoding.UTF8);
         }
 
+        /// <summary>
+        /// Prints all missing classes between two registers to a CSV file
+        /// </summary>
+        /// <param name="registers"></param>
+        /// <param name="fileName"></param>
         public static void PrintAllMissingClassesToCSV(
-            List<HeroesRegister> registers,
-            string fileName
-            )
+            List<HeroesRegister> registers, string fileName)
         {
             if (registers.Count < 2)
             {
-                Console.WriteLine("Reikia bent dviejų registrų trūkstamų klasių");
+                Console.WriteLine(
+                    "Reikia bent dviejų registrų trūkstamų klasių palyginimui");
                 return;
             }
 
-            HeroesRegister reg1 = registers[0];
-            HeroesRegister reg2 = registers[1];
+            List<List<string>> allMissing = HeroesRegister.GetAllMissingClasses(
+                registers);
+            List<string> lines = new List<string>();
 
-            List<string> missing1 = HeroesRegister.GetMissingClasses(reg1, reg2);
-            List<string> missing2 = HeroesRegister.GetMissingClasses(reg2, reg1);
+            int row = 0;
+            int maxRows = 0;
 
-            List<string> lines = new List<string>
-            {
-                reg1.Race + ";" + reg2.Race
-            };
-
+            // Find max row count
             int i = 0;
-            int max = missing1.Count > missing2.Count ? 
-                missing1.Count : 
-                missing2.Count;
-            while (i < max)
+            while (i < allMissing.Count)
             {
-                string val1 = i < missing1.Count ? missing1[i] : "";
-                string val2 = i < missing2.Count ? missing2[i] : "";
-                lines.Add(val1 + ";" + val2);
+                if (allMissing[i].Count > maxRows) maxRows = allMissing[i].Count;
                 i++;
+            }
+
+            // First line = race names
+            string header = "";
+            int h = 0;
+            while (h < registers.Count)
+            {
+                header += registers[h].Race + 
+                    (h < registers.Count - 1 ? ";" : "");
+                h++;
+            }
+            lines.Add(header);
+
+            // Rows of missing classes
+            row = 0;
+            while (row < maxRows)
+            {
+                string line = "";
+                int col = 0;
+                while (col < allMissing.Count)
+                {
+                    string val = row < allMissing[col].Count ?
+                        allMissing[col][row] : "";
+                    line += val + (col < allMissing.Count - 1 ? ";" : "");
+                    col++;
+                }
+                lines.Add(line);
+                row++;
             }
 
             File.WriteAllLines(fileName, lines, Encoding.UTF8);
         }
-        private static bool ContainsClass(List<string> list, string value)
-        {
-            int i = 0;
-            while (i < list.Count)
-            {
-                if (list[i] == value) return true;
-                i++;
-            }
-            return false;
-        }
+
+        /// <summary>
+        /// Reads heroes from a given file path
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public static HeroesRegister ReadHeroes(string filePath)
         {
             string[] lines = File.ReadAllLines(filePath, Encoding.UTF8);
@@ -152,6 +166,10 @@ namespace Laboras
 
             return register;
         }
+        /// <summary>
+        /// Prints the strongest heroes across multiple files
+        /// </summary>
+        /// <param name="filePaths"></param>
         public static void PrintStrongestHeroesAcrossFiles(string[] filePaths)
         {
             List<Heroes> strongest = HeroesRegister.

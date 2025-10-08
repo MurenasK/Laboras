@@ -5,15 +5,23 @@ namespace Laboras
 {
     class HeroesRegister
     {
+        /// <summary>
+        /// Creates a list of heroes
+        /// </summary>
         private List<Heroes> heroes;
         public string Race { get; set; }
         public string City { get; set; }
-
+        /// <summary>
+        /// Creates a register for heroes
+        /// </summary>
         public HeroesRegister()
         {
             heroes = new List<Heroes>();
         }
-
+        /// <summary>
+        /// Method to add hero to the register
+        /// </summary>
+        /// <param name="hero"></param>
         public void AddHero(Heroes hero)
         {
             if (!Contains(hero))
@@ -21,7 +29,11 @@ namespace Laboras
                 heroes.Add(hero);
             }
         }
-
+        /// <summary>
+        /// Checks if the register contains a specific hero
+        /// </summary>
+        /// <param name="hero"></param>
+        /// <returns></returns>
         public bool Contains(Heroes hero)
         {
             int i = 0;
@@ -33,17 +45,27 @@ namespace Laboras
             }
             return false;
         }
-
+        /// <summary>
+        /// Returns a list of heroes
+        /// </summary>
+        /// <returns></returns>
         public List<Heroes> GetHeroesList()
         {
             return new List<Heroes>(heroes);
         }
-
+        /// <summary>
+        /// Returns the count of heroes in the register
+        /// </summary>
+        /// <returns></returns>
         public int Count()
         {
             return heroes.Count;
         }
-
+        /// <summary>
+        /// Brings out the strongest hero from the register
+        /// </summary>
+        /// <param name="register"></param>
+        /// <returns></returns>
         public static Heroes GetStrongestHero(HeroesRegister register)
         {
             List<Heroes> heroes = register.GetHeroesList();
@@ -63,6 +85,36 @@ namespace Laboras
 
             return strongest;
         }
+        /// <summary>
+        /// Takjes out unique classes from the register
+        /// </summary>
+        /// <param name="register"></param>
+        /// <returns></returns>
+        /// 
+
+        public static List<string> GetAllUniqueClasses(List<HeroesRegister> registers)
+        {
+            List<string> uniqueClasses = new List<string>();
+            int i = 0;
+            while (i < registers.Count)
+            {
+                List<string> regClasses = GetUniqueClasses(registers[i]);
+
+                int j = 0;
+                while (j < regClasses.Count)
+                {
+                    string heroClass = regClasses[j];
+                    if (!ContainsClass(uniqueClasses, heroClass))
+                    {
+                        uniqueClasses.Add(heroClass);
+                    }
+                    j++;
+                }
+
+                i++;
+            }
+            return uniqueClasses;
+        }
 
         public static List<string> GetUniqueClasses(HeroesRegister register)
         {
@@ -80,7 +132,12 @@ namespace Laboras
             }
             return unique;
         }
-
+        /// <summary>
+        /// Checks if a list contains a specific class
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="heroClass"></param>
+        /// <returns></returns>
         private static bool ContainsClass(List<string> list, string heroClass)
         {
             int i = 0;
@@ -91,26 +148,62 @@ namespace Laboras
             }
             return false;
         }
-
-        public static List<string> GetMissingClasses(HeroesRegister baseRegister,
-                                                   HeroesRegister compareRegister)
+        /// <summary>
+        /// Searches for missing classes in one register compared to another
+        /// </summary>
+        /// <param name="baseRegister"></param>
+        /// <param name="compareRegister"></param>
+        /// <returns></returns>
+        public static List<List<string>> GetAllMissingClasses(
+            List<HeroesRegister> registers)
         {
-            List<string> baseClasses = GetUniqueClasses(baseRegister);
-            List<string> compareClasses = GetUniqueClasses(compareRegister);
-            List<string> missing = new List<string>();
-
+            List<List<string>> allMissing = new List<List<string>>();
             int i = 0;
-            while (i < compareClasses.Count)
+            while (i < registers.Count)
             {
-                if (!ContainsClass(baseClasses, compareClasses[i]))
+                List<string> baseClasses = GetUniqueClasses(registers[i]);
+                List<string> missing = new List<string>();
+
+                int j = 0;
+                while (j < registers.Count)
                 {
-                    missing.Add(compareClasses[i]);
+                    if (i != j)
+                    {
+                        List<string> compareClasses = GetUniqueClasses(
+                            registers[j]);
+                        int k = 0;
+                        while (k < compareClasses.Count)
+                        {
+                            if (!ContainsClass(baseClasses, compareClasses[k]))
+                            {
+                                if (!ContainsClass(missing, compareClasses[k]))
+                                    missing.Add(compareClasses[k]);
+                            }
+                            k++;
+                        }
+                    }
+                    j++;
                 }
+
+                // If no missing classes, add "VISI"
+                if (missing.Count == 0)
+                {
+                    missing.Add("VISI");
+                }
+
+                allMissing.Add(missing);
                 i++;
             }
 
-            return missing;
+            return allMissing;
         }
+
+
+        /// <summary>
+        /// Checks for the strongest heroes across multiple registers
+        /// </summary>
+        /// <param name="filePaths"></param>
+        /// <returns></returns>
         public static List<Heroes> GetStrongestHeroesAcrossRegisters(
             string[] filePaths)
         {
@@ -149,8 +242,10 @@ namespace Laboras
 
             return strongestOverall;
         }
-
-
+        /// <summary>
+        /// Brings out the strongest heroes from the register
+        /// </summary>
+        /// <returns></returns>
         public List<Heroes> GetStrongestHeroes()
         {
             List<Heroes> strongest = new List<Heroes>();
@@ -172,12 +267,9 @@ namespace Laboras
                 {
                     strongest.Add(hero);
                 }
-
                 i++;
             }
             return strongest;
         }
-
-
     }
 }

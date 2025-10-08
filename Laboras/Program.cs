@@ -7,20 +7,23 @@ namespace Laboras
     {
         static void Main(string[] args)
         {
-            string[] heroFiles = { "heroes1.csv", "heroes2.csv" };
 
+            /// Define input files
+            string[] heroFiles = { "heroes3.csv", "heroes4.csv" };
+            /// Read all registers from input files
             List<HeroesRegister> allRegisters = new List<HeroesRegister>();
-            allRegisters.Add(IOUtils.ReadHeroes(@"heroes1.csv"));
-            allRegisters.Add(IOUtils.ReadHeroes(@"heroes2.csv"));
-
+            allRegisters.Add(IOUtils.ReadHeroes(@"heroes3.csv"));
+            allRegisters.Add(IOUtils.ReadHeroes(@"heroes4.csv"));
+            /// Print all registers to a single output file
             IOUtils.PrintAllRegistersToFile(allRegisters, "PradDuomenys.txt");
-
+            /// Print all unique classes to a CSV file
             IOUtils.PrintAllClassesToCSV(allRegisters, "Klases.csv");
-
+            /// Print all missing classes to a CSV file
             IOUtils.PrintAllMissingClassesToCSV(allRegisters,
-                "TrukstamosKlases.csv");
+                "TrukstamosKlasės.csv");
+            /// Print the strongest heroes across all files to a CSV file
             IOUtils.PrintStrongestHeroesAcrossFiles(heroFiles);
-
+            /// Notify user of successful file generation
             Console.WriteLine("Visi failai sugeneruoti sėkmingai.");
         }
     }
