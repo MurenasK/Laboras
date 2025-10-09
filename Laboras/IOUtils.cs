@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Laboras
@@ -74,60 +75,38 @@ namespace Laboras
         /// <param name="registers"></param>
         /// <param name="fileName"></param>
         public static void PrintAllMissingClassesToCSV(
-            List<HeroesRegister> registers, string fileName)
+    List<HeroesRegister> registers, string fileName)
         {
             if (registers.Count < 2)
             {
-                Console.WriteLine(
-                    "Reikia bent dviejų registrų trūkstamų klasių palyginimui");
+                Console.WriteLine("Reikia bent dviejų registrų trūkstamų klasių palyginimui");
                 return;
             }
 
-            List<List<string>> allMissing = HeroesRegister.GetAllMissingClasses(
-                registers);
-            List<string> lines = new List<string>();
+            var allMissing = HeroesRegister.GetAllMissingClasses(registers);
 
-            int row = 0;
-            int maxRows = 0;
+            // Determine max row count in one pass
+            int maxRows = allMissing.Max(list => list.Count);
 
-            // Find max row count
-            int i = 0;
-            while (i < allMissing.Count)
+            var lines = new List<string>();
+
+            // Header (race names)
+            lines.Add(string.Join(";", registers.Select(r => r.Race)));
+
+            // Data rows
+            for (int row = 0; row < maxRows; row++)
             {
-                if (allMissing[i].Count > maxRows) maxRows = allMissing[i].Count;
-                i++;
-            }
-
-            // First line = race names
-            string header = "";
-            int h = 0;
-            while (h < registers.Count)
-            {
-                header += registers[h].Race + 
-                    (h < registers.Count - 1 ? ";" : "");
-                h++;
-            }
-            lines.Add(header);
-
-            // Rows of missing classes
-            row = 0;
-            while (row < maxRows)
-            {
-                string line = "";
-                int col = 0;
-                while (col < allMissing.Count)
+                var rowValues = new List<string>();
+                for (int col = 0; col < allMissing.Count; col++)
                 {
-                    string val = row < allMissing[col].Count ?
-                        allMissing[col][row] : "";
-                    line += val + (col < allMissing.Count - 1 ? ";" : "");
-                    col++;
+                    rowValues.Add(row < allMissing[col].Count ? allMissing[col][row] : "");
                 }
-                lines.Add(line);
-                row++;
+                lines.Add(string.Join(";", rowValues));
             }
 
             File.WriteAllLines(fileName, lines, Encoding.UTF8);
         }
+
 
         /// <summary>
         /// Reads heroes from a given file path

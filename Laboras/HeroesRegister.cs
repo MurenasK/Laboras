@@ -11,6 +11,7 @@ namespace Laboras
         private List<Heroes> heroes;
         public string Race { get; set; }
         public string City { get; set; }
+
         /// <summary>
         /// Creates a register for heroes
         /// </summary>
@@ -18,6 +19,7 @@ namespace Laboras
         {
             heroes = new List<Heroes>();
         }
+
         /// <summary>
         /// Method to add hero to the register
         /// </summary>
@@ -29,6 +31,7 @@ namespace Laboras
                 heroes.Add(hero);
             }
         }
+
         /// <summary>
         /// Checks if the register contains a specific hero
         /// </summary>
@@ -45,6 +48,7 @@ namespace Laboras
             }
             return false;
         }
+
         /// <summary>
         /// Returns a list of heroes
         /// </summary>
@@ -53,6 +57,7 @@ namespace Laboras
         {
             return new List<Heroes>(heroes);
         }
+
         /// <summary>
         /// Returns the count of heroes in the register
         /// </summary>
@@ -61,6 +66,7 @@ namespace Laboras
         {
             return heroes.Count;
         }
+
         /// <summary>
         /// Brings out the strongest hero from the register
         /// </summary>
@@ -85,13 +91,12 @@ namespace Laboras
 
             return strongest;
         }
+
         /// <summary>
         /// Takjes out unique classes from the register
         /// </summary>
         /// <param name="register"></param>
         /// <returns></returns>
-        /// 
-
         public static List<string> GetAllUniqueClasses(List<HeroesRegister> registers)
         {
             List<string> uniqueClasses = new List<string>();
@@ -132,6 +137,7 @@ namespace Laboras
             }
             return unique;
         }
+
         /// <summary>
         /// Checks if a list contains a specific class
         /// </summary>
@@ -148,6 +154,7 @@ namespace Laboras
             }
             return false;
         }
+
         /// <summary>
         /// Searches for missing classes in one register compared to another
         /// </summary>
@@ -198,7 +205,6 @@ namespace Laboras
             return allMissing;
         }
 
-
         /// <summary>
         /// Checks for the strongest heroes across multiple registers
         /// </summary>
@@ -242,6 +248,7 @@ namespace Laboras
 
             return strongestOverall;
         }
+
         /// <summary>
         /// Brings out the strongest heroes from the register
         /// </summary>
@@ -270,6 +277,106 @@ namespace Laboras
                 i++;
             }
             return strongest;
+        }
+        /// <summary>
+        /// Palieka TRUE, jei pirmasis registras turi mažiau herojų nei antrasis.
+        /// Lyginama pagal herojų skaičių (Count()).
+        /// </summary>
+        public static bool operator <(HeroesRegister reg1, HeroesRegister reg2)
+        {
+            if (reg1 is null || reg2 is null)
+            {
+                // Null registras visada "mažesnis" už ne-null
+                return reg1 is null && !(reg2 is null);
+            }
+            return reg1.Count() < reg2.Count();
+        }
+
+        /// <summary>
+        /// Palieka TRUE, jei pirmasis registras turi daugiau herojų nei antrasis.
+        /// Lyginama pagal herojų skaičių (Count()).
+        /// </summary>
+        public static bool operator >(HeroesRegister reg1, HeroesRegister reg2)
+        {
+            if (reg1 is null || reg2 is null)
+            {
+                // Ne-null registras visada "didesnis" už null
+                return !(reg1 is null) && reg2 is null;
+            }
+            return reg1.Count() > reg2.Count();
+        }
+
+        /// <summary>
+        /// Palieka TRUE, jei pirmasis registras turi mažiau arba lygiai tiek pat herojų kaip antrasis.
+        /// Lyginama pagal herojų skaičių (Count()).
+        /// </summary>
+        public static bool operator <=(HeroesRegister reg1, HeroesRegister reg2)
+        {
+            if (reg1 is null && reg2 is null) return true;
+            if (reg1 is null || reg2 is null)
+            {
+                // Null <= ne-null yra true, ne-null <= null yra false
+                return reg1 is null;
+            }
+            return reg1.Count() <= reg2.Count();
+        }
+
+        /// <summary>
+        /// Palieka TRUE, jei pirmasis registras turi daugiau arba lygiai tiek pat herojų kaip antrasis.
+        /// Lyginama pagal herojų skaičių (Count()).
+        /// </summary>
+        public static bool operator >=(HeroesRegister reg1, HeroesRegister reg2)
+        {
+            if (reg1 is null && reg2 is null) return true;
+            if (reg1 is null || reg2 is null)
+            {
+                // Ne-null >= null yra true, null >= ne-null yra false
+                return reg2 is null;
+            }
+            return reg1.Count() >= reg2.Count();
+        }
+
+        // --- LYGUMO (EQUALITY) OPERATORIAI IR METODAI ---
+
+        /// <summary>
+        /// Palieka TRUE, jei du registrai yra lygūs (pagal herojų skaičių).
+        /// </summary>
+        public static bool operator ==(HeroesRegister reg1, HeroesRegister reg2)
+        {
+            if (reg1 is null && reg2 is null) return true;
+            if (reg1 is null || reg2 is null) return false;
+            // Galima pridėti ir kitus laukus lyginimui, pvz.:
+            // return reg1.Count() == reg2.Count() && reg1.Race == reg2.Race;
+            return reg1.Count() == reg2.Count();
+        }
+
+        /// <summary>
+        /// Palieka TRUE, jei du registrai nėra lygūs (pagal herojų skaičių).
+        /// </summary>
+        public static bool operator !=(HeroesRegister reg1, HeroesRegister reg2)
+        {
+            return !(reg1 == reg2);
+        }
+
+        /// <summary>
+        /// Perkrautas Equals metodas lyginimui su objektu.
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            if (obj is HeroesRegister other)
+            {
+                return this == other; // Naudojame perkrautą == operatorių
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Perkrautas GetHashCode metodas. Būtinas, kai perkraunami ==/!= ir Equals.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            // Naudojame herojų skaičių (Count()) hash kodo generavimui.
+            return this.Count().GetHashCode();
         }
     }
 }

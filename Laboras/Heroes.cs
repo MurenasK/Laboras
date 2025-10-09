@@ -23,6 +23,7 @@ namespace Laboras
         public int Movement { get; set; }
         public int IQ { get; set; }
         public int SpecPower { get; set; }
+        public int Strength { get; set; }
 
         /// <summary>
         /// Appends charasteristic to a hero
@@ -87,6 +88,5 @@ namespace Laboras
         {
             return this.PowerScore() == other.PowerScore();
         }
-
     }
 }
