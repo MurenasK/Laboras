@@ -79,7 +79,8 @@ namespace Laboras
         {
             if (registers.Count < 2)
             {
-                Console.WriteLine("Reikia bent dviejų registrų trūkstamų klasių palyginimui");
+                Console.WriteLine(
+                    "Reikia bent dviejų registrų trūkstamų klasių palyginimui");
                 return;
             }
 
@@ -99,7 +100,8 @@ namespace Laboras
                 var rowValues = new List<string>();
                 for (int col = 0; col < allMissing.Count; col++)
                 {
-                    rowValues.Add(row < allMissing[col].Count ? allMissing[col][row] : "");
+                    rowValues.Add(
+                        row < allMissing[col].Count ? allMissing[col][row] : "");
                 }
                 lines.Add(string.Join(";", rowValues));
             }

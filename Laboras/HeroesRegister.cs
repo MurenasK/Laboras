@@ -97,7 +97,8 @@ namespace Laboras
         /// </summary>
         /// <param name="register"></param>
         /// <returns></returns>
-        public static List<string> GetAllUniqueClasses(List<HeroesRegister> registers)
+        public static List<string> GetAllUniqueClasses(
+            List<HeroesRegister> registers)
         {
             List<string> uniqueClasses = new List<string>();
             int i = 0;
@@ -307,7 +308,8 @@ namespace Laboras
         }
 
         /// <summary>
-        /// Palieka TRUE, jei pirmasis registras turi mažiau arba lygiai tiek pat herojų kaip antrasis.
+        /// Palieka TRUE, jei pirmasis registras turi mažiau arba
+        /// lygiai tiek pat herojų kaip antrasis.
         /// Lyginama pagal herojų skaičių (Count()).
         /// </summary>
         public static bool operator <=(HeroesRegister reg1, HeroesRegister reg2)
@@ -322,7 +324,8 @@ namespace Laboras
         }
 
         /// <summary>
-        /// Palieka TRUE, jei pirmasis registras turi daugiau arba lygiai tiek pat herojų kaip antrasis.
+        /// Palieka TRUE, jei pirmasis registras turi daugiau arba lygiai tiek
+        /// pat herojų kaip antrasis.
         /// Lyginama pagal herojų skaičių (Count()).
         /// </summary>
         public static bool operator >=(HeroesRegister reg1, HeroesRegister reg2)
@@ -371,7 +374,8 @@ namespace Laboras
         }
 
         /// <summary>
-        /// Perkrautas GetHashCode metodas. Būtinas, kai perkraunami ==/!= ir Equals.
+        /// Perkrautas GetHashCode metodas. Būtinas,
+        /// kai perkraunami ==/!= ir Equals.
         /// </summary>
         public override int GetHashCode()
         {
