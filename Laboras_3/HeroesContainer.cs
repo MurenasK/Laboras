@@ -117,6 +117,59 @@ namespace Laboras_3
             return result;
         }
 
+        public void Put(int index, Heroes hero)
+        {
+            if (index < 0 || index >= Count)
+            {
+                Console.WriteLine("Nėra tokio indexo");
+            }
+            this.Heroes[index] = hero;
+        }
+
+        public void Insert(int index, Heroes hero)
+        {
+            if (index < 0 || index > Count)
+            {
+                Console.WriteLine("Nėra tokio indexo");
+            }
+            if (this.Count >= this.Capacity)
+            {
+                EnsureCapacity(this.Capacity * 2);
+            }
+            for (int i = this.Count; i > index; i--)
+            {
+                this.Heroes[i] = this.Heroes[i - 1];
+            }
+            this.Heroes[index] = hero;
+            this.Count++;
+        }
+
+        public void RemoveAt(int index)
+        {
+            if (index < 0 || index >= Count)
+            {
+                Console.WriteLine("Nėra tokio indexo");
+            }
+            for (int i = index; i < this.Count - 1; i++)
+            {
+                this.Heroes[i] = this.Heroes[i + 1];
+            }
+            this.Heroes[this.Count - 1] = null;
+            this.Count--;
+        }
+
+        public void Remove(Heroes hero)
+        {
+            for (int i = 0; i < this.Count; i++)
+            {
+                if (this.Heroes[i].Equals(hero))
+                {
+                    RemoveAt(i);
+                    return;
+                }
+            }
+            Console.WriteLine("Herojus nerastas");
+        }
 
     }
 }

@@ -95,24 +95,27 @@ namespace Laboras_3
         /// </summary>
         /// <param name="register"></param>
         /// <returns></returns>
-        public static List<string> GetAllUniqueClasses(
-            List<HeroesRegister> registers)
+        public static List<string> GetAllUniqueClasses(HeroesRegister[] registers)
         {
             List<string> uniqueClasses = new List<string>();
             int i = 0;
-            while (i < registers.Count)
+            while (i < registers.Length)
             {
-                List<string> regClasses = GetUniqueClasses(registers[i]);
-
-                int j = 0;
-                while (j < regClasses.Count)
+                HeroesRegister reg = registers[i];
+                if (reg != null)  // <-- null check
                 {
-                    string heroClass = regClasses[j];
-                    if (!ContainsClass(uniqueClasses, heroClass))
+                    List<string> regClasses = GetUniqueClasses(reg);
+
+                    int j = 0;
+                    while (j < regClasses.Count)
                     {
-                        uniqueClasses.Add(heroClass);
+                        string heroClass = regClasses[j];
+                        if (!ContainsClass(uniqueClasses, heroClass))
+                        {
+                            uniqueClasses.Add(heroClass);
+                        }
+                        j++;
                     }
-                    j++;
                 }
 
                 i++;
@@ -120,13 +123,19 @@ namespace Laboras_3
             return uniqueClasses;
         }
 
+
         public static List<string> GetUniqueClasses(HeroesRegister register)
         {
             List<string> unique = new List<string>();
 
+            if (register == null) return unique; // early return if null
+
             for (int i = 0; i < register.Count; i++)
             {
-                string heroClass = register.GetHero(i).Class;
+                Heroes hero = register.GetHero(i);
+                if (hero == null) continue; // skip null heroes
+
+                string heroClass = hero.Class;
                 if (!ContainsClass(unique, heroClass))
                 {
                     unique.Add(heroClass);
@@ -135,6 +144,8 @@ namespace Laboras_3
 
             return unique;
         }
+
+
 
 
         /// <summary>
@@ -161,17 +172,17 @@ namespace Laboras_3
         /// <param name="compareRegister"></param>
         /// <returns></returns>
         public static List<List<string>> GetAllMissingClasses(
-            List<HeroesRegister> registers)
+            HeroesRegister[] registers)
         {
             List<List<string>> allMissing = new List<List<string>>();
             int i = 0;
-            while (i < registers.Count)
+            while (i < registers.Length)
             {
                 List<string> baseClasses = GetUniqueClasses(registers[i]);
                 List<string> missing = new List<string>();
 
                 int j = 0;
-                while (j < registers.Count)
+                while (j < registers.Length)
                 {
                     if (i != j)
                     {

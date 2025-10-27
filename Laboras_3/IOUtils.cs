@@ -54,22 +54,35 @@ namespace Laboras_3
         /// </summary>
         /// <param name="registers"></param>
         /// <param name="fileName"></param>
-        public static void PrintAllClassesToCSV(
-            List<HeroesRegister> registers, string fileName)
+        public static void PrintAllClassesToCSV(HeroesContainer[] registers, string fileName)
         {
-            List<string> uniqueClasses = HeroesRegister.GetAllUniqueClasses(
-                registers);
+            List<string> uniqueClasses = new List<string>();
 
-            List<string> lines = new List<string> { "Klasės" };
-            int k = 0;
-            while (k < uniqueClasses.Count)
+            // Iterate through all containers and collect unique classes
+            for (int i = 0; i < registers.Length; i++)
             {
-                lines.Add(uniqueClasses[k]);
-                k++;
+                HeroesContainer container = registers[i];
+                if (container == null) continue; // skip null containers
+
+                for (int j = 0; j < container.Count; j++)
+                {
+                    Heroes hero = container.Get(j);
+                    if (hero == null) continue;
+
+                    if (!uniqueClasses.Contains(hero.Class))
+                    {
+                        uniqueClasses.Add(hero.Class);
+                    }
+                }
             }
+
+            // Write to CSV
+            List<string> lines = new List<string> { "Klasės" };
+            lines.AddRange(uniqueClasses);
 
             File.WriteAllLines(fileName, lines, Encoding.UTF8);
         }
+
 
         /// <summary>
         /// Prints all missing classes between two registers to a CSV file
@@ -77,16 +90,24 @@ namespace Laboras_3
         /// <param name="registers"></param>
         /// <param name="fileName"></param>
         public static void PrintAllMissingClassesToCSV(
-    List<HeroesRegister> registers, string fileName)
+    HeroesContainer[] registers, string fileName)
         {
-            if (registers.Count < 2)
+            if (registers.Count() < 2)
             {
                 Console.WriteLine(
                     "Reikia bent dviejų registrų trūkstamų klasių palyginimui");
                 return;
             }
-
-            var allMissing = HeroesRegister.GetAllMissingClasses(registers);
+            // Convert HeroesContainer[] to HeroesRegister[]
+            HeroesRegister[] heroRegisters = new HeroesRegister[registers.Length];
+            for (int i = 0; i < registers.Length; i++)
+            {
+                HeroesRegister reg = new HeroesRegister(registers[i]);
+                reg.Race = registers[i].Race;
+                reg.City = registers[i].City;
+                heroRegisters[i] = reg;
+            }
+            var allMissing = HeroesRegister.GetAllMissingClasses(heroRegisters);
 
             // Determine max row count in one pass
             int maxRows = allMissing.Max(list => list.Count);
