@@ -9,10 +9,10 @@ namespace Laboras_3
     class HeroesContainer
     {
         private Heroes[] Heroes;
-        private int Capacity { get; set; }
+        private int Capacity;
 
         public int Count { get; private set; }
-
+        // fix
         public string Race { get; set; }
         public string City { get; set; }
         public HeroesContainer(HeroesContainer[] allRegisters)
@@ -32,7 +32,7 @@ namespace Laboras_3
             {
                 Console.WriteLine("Nėra tokio indexo");
             }
-            return Heroes[index];
+            return Heroes[index].Clone();
         }
 
         public void Add(Heroes hero)
@@ -41,7 +41,7 @@ namespace Laboras_3
             {
                 EnsureCapacity(this.Capacity * 2);
             }
-            this.Heroes[this.Count++] = hero;
+            this.Heroes[this.Count++] = hero; // klono reikia
         }
 
         private void EnsureCapacity(int minimumCapacity)
@@ -57,7 +57,7 @@ namespace Laboras_3
                 this.Heroes = temp;
             }
         }
-
+        // isrinkima reikia padaryti
         public void Sort()
         {
             bool flag = true;
@@ -83,7 +83,7 @@ namespace Laboras_3
             for(int i = 0; i < container.Count; i++)
             {
                 Heroes clonedHeroes = container.Get(i).Clone();
-                this.Add(container.Get(i));
+                this.Add(container.Get(i).Clone());
             }
         }
 
@@ -96,7 +96,7 @@ namespace Laboras_3
 
             for (int i = 1; i < this.Count; i++)
             {
-                Heroes hero = this.Get(i);
+                Heroes hero = this.Get(i).Clone();
 
                 if (hero.IsStrongerThan(strongest.Get(0)))
                 {
@@ -112,7 +112,7 @@ namespace Laboras_3
             // Convert to array
             Heroes[] result = new Heroes[strongest.Count];
             for (int i = 0; i < strongest.Count; i++)
-                result[i] = strongest.Get(i);
+                result[i] = strongest.Get(i).Clone();
 
             return result;
         }
@@ -123,7 +123,7 @@ namespace Laboras_3
             {
                 Console.WriteLine("Nėra tokio indexo");
             }
-            this.Heroes[index] = hero;
+            this.Heroes[index] = hero; // klonas
         }
 
         public void Insert(int index, Heroes hero)
@@ -145,7 +145,7 @@ namespace Laboras_3
             {
                 this.Heroes[i] = this.Heroes[i - 1];
             }
-            this.Heroes[index] = hero;
+            this.Heroes[index] = hero; // klonas
             this.Count++;
         }
 

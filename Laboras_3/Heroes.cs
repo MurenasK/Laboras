@@ -126,5 +126,39 @@ namespace Laboras_3
         {
             return this.PowerScore() == other.PowerScore();
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Heroes heroes &&
+                   Name == heroes.Name &&
+                   Class == heroes.Class &&
+                   LifePoints == heroes.LifePoints &&
+                   Mana == heroes.Mana &&
+                   DmgPoints == heroes.DmgPoints &&
+                   DefPoints == heroes.DefPoints &&
+                   Power == heroes.Power &&
+                   Movement == heroes.Movement &&
+                   IQ == heroes.IQ &&
+                   SpecPower == heroes.SpecPower &&
+                   Strength == heroes.Strength;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = 928105462;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Class);
+            hashCode = hashCode * -1521134295 + LifePoints.GetHashCode();
+            hashCode = hashCode * -1521134295 + Mana.GetHashCode();
+            hashCode = hashCode * -1521134295 + DmgPoints.GetHashCode();
+            hashCode = hashCode * -1521134295 + DefPoints.GetHashCode();
+            hashCode = hashCode * -1521134295 + Power.GetHashCode();
+            hashCode = hashCode * -1521134295 + Movement.GetHashCode();
+            hashCode = hashCode * -1521134295 + IQ.GetHashCode();
+            hashCode = hashCode * -1521134295 + SpecPower.GetHashCode();
+            hashCode = hashCode * -1521134295 + Strength.GetHashCode();
+            return hashCode;
+        }
     }
+
 }

@@ -59,6 +59,8 @@ namespace Laboras_3
         /// </summary>
         /// <param name="register"></param>
         /// <returns></returns>
+        /// 
+        // forai
         public Heroes[] GetStrongestHeroes()
         {
             if (heroes.Count == 0) return new Heroes[0];
@@ -274,7 +276,8 @@ namespace Laboras_3
         /// Checks for the strongest heroes across multiple registers
         /// </summary>
         /// <param name="filePaths"></param>
-        /// <returns></returns>
+        /// <returns></returns> 
+        // be static
         public static Heroes[] GetStrongestHeroesAcrossRegisters(string[] filePaths)
         {
             HeroesContainer strongestOverall = new HeroesContainer();
