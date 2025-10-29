@@ -1,6 +1,7 @@
 ﻿using Laboras_3;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading;
 
 namespace Laboras_3
@@ -16,14 +17,45 @@ namespace Laboras_3
         public HeroesContainer Weirdos = new HeroesContainer();
 
         private HeroesContainer heroes = new HeroesContainer();
+        private HeroesRegister heroesRegister;
 
+        /// <summary>
+        /// Clears the register
+        /// </summary>
+        public void Clear()
+        {
+            heroes.Clear();
+        }
+        /// <summary>
+        /// Register constructor
+        /// </summary>
+        /// <param name="container"></param>
         public HeroesRegister(HeroesContainer container)
         {
             this.heroes = container; // your internal container field
         }
-
+        /// <summary>
+        /// Register copy constructor
+        /// </summary>
+        /// <param name="heroesRegister"></param>
+        public HeroesRegister(HeroesRegister heroesRegister)
+        {
+            this.heroesRegister = heroesRegister;
+        }
+        /// <summary>
+        /// Register default constructor
+        /// </summary>
+        public HeroesRegister()
+        {
+        }
+        /// <summary>
+        /// Count of heroes in the register
+        /// </summary>
         public int Count => heroes.Count;
-
+        /// <summary>
+        /// Gets all heroes from the register
+        /// </summary>
+        /// <returns></returns>
         public Heroes[] GetAllHeroes()
         {
             Heroes[] arr = new Heroes[heroes.Count];
@@ -31,13 +63,20 @@ namespace Laboras_3
                 arr[i] = heroes.Get(i);
             return arr;
         }
-
+        /// <summary>
+        /// Adds a hero to the register
+        /// </summary>
+        /// <param name="hero"></param>
         public void AddHero(Heroes hero)
         {
             if (!Contains(hero))
                 heroes.Add(hero);
         }
-
+        /// <summary>
+        /// Contains check for a hero in the register
+        /// </summary>
+        /// <param name="hero"></param>
+        /// <returns></returns>
         public bool Contains(Heroes hero)
         {
             for (int i = 0; i < heroes.Count; i++)
@@ -48,7 +87,11 @@ namespace Laboras_3
             }
             return false;
         }
-
+        /// <summary>
+        /// Gets a hero by index from the register
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public Heroes GetHero(int index)
         {
             return heroes.Get(index);
@@ -63,7 +106,19 @@ namespace Laboras_3
         {
             if (heroes.Count == 0) return new Heroes[0];
 
+            HeroesContainer strongest = FindStrongestContainer();
+            return ConvertContainerToArray(strongest);
+        }
+
+        /// <summary>
+        /// Finds the strongest hero container
+        /// </summary>
+        /// <returns></returns>
+        private HeroesContainer FindStrongestContainer()
+        {
             HeroesContainer strongest = new HeroesContainer();
+            if (heroes.Count == 0) return strongest;
+
             strongest.Add(heroes.Get(0));
 
             for (int i = 1; i < heroes.Count; i++)
@@ -81,13 +136,21 @@ namespace Laboras_3
                 }
             }
 
-            // Convert HeroesContainer to array manually
-            Heroes[] result = new Heroes[strongest.Count];
-            for (int i = 0; i < strongest.Count; i++)
-            {
-                result[i] = strongest.Get(i);
-            }
+            return strongest;
+        }
 
+        /// <summary>
+        /// Converts a container to an array
+        /// </summary>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        private Heroes[] ConvertContainerToArray(HeroesContainer container)
+        {
+            Heroes[] result = new Heroes[container.Count];
+            for (int i = 0; i < container.Count; i++)
+            {
+                result[i] = container.Get(i);
+            }
             return result;
         }
 
@@ -97,7 +160,7 @@ namespace Laboras_3
         /// </summary>
         /// <param name="register"></param>
         /// <returns></returns>
-        public static List<string> GetAllUniqueClasses(HeroesRegister[] registers)
+        public List<string> GetAllUniqueClasses(HeroesRegister[] registers)
         {
             List<string> uniqueClasses = new List<string>();
             int i = 0;
@@ -124,9 +187,13 @@ namespace Laboras_3
             }
             return uniqueClasses;
         }
+        /// <summary>
+        /// Gets unique classes from a single register
+        /// </summary>
+        /// <param name="register"></param>
+        /// <returns></returns>
 
-
-        public static List<string> GetUniqueClasses(HeroesRegister register)
+        public List<string> GetUniqueClasses(HeroesRegister register)
         {
             List<string> unique = new List<string>();
 
@@ -156,7 +223,7 @@ namespace Laboras_3
         /// <param name="list"></param>
         /// <param name="heroClass"></param>
         /// <returns></returns>
-        private static bool ContainsClass(List<string> list, string heroClass)
+        private bool ContainsClass(List<string> list, string heroClass)
         {
             int i = 0;
             while (i < list.Count)
@@ -173,7 +240,7 @@ namespace Laboras_3
         /// <param name="baseRegister"></param>
         /// <param name="compareRegister"></param>
         /// <returns></returns>
-        public static List<List<string>> GetAllMissingClasses(
+        public List<List<string>> GetAllMissingClasses(
             HeroesRegister[] registers)
         {
             List<List<string>> allMissing = new List<List<string>>();
@@ -216,25 +283,33 @@ namespace Laboras_3
 
             return allMissing;
         }
-
-        public static Heroes[] GetStrongestHeroesInRegister(
-            HeroesContainer register)
+        /// <summary>
+        /// Gets the strongest heroes in a register
+        /// </summary>
+        /// <param name="register"></param>
+        /// <returns></returns>
+        public Heroes[] GetStrongestHeroesInRegister(
+            HeroesRegister register)
         {
             return register.GetStrongestHeroes();
         }
-
-        public static HeroesRegister GetWeirdHeroes(
-            HeroesContainer[] registers)
+        /// <summary>
+        /// Gets weird heroes from multiple registers
+        /// </summary>
+        /// <param name="registers"></param>
+        /// <returns></returns>
+        public HeroesRegister GetWeirdHeroes(
+            HeroesRegister[] registers)
         {
             HeroesContainer weirdHeroes = new HeroesContainer();
             int temp = 0;
             for (int i = 0; i < registers.Length; i++)
             {
-                HeroesContainer container = registers[i];
+                HeroesRegister container = registers[i];
                 if (container == null) continue; // skip null containers
                 for (int j = 0; j < container.Count; j++)
                 {
-                    Heroes hero = container.Get(j);
+                    Heroes hero = container.GetHero(j);
                     if (hero == null) continue;
                     // Check for weird characteristics
                     if (hero.IsWeird() == 1)
@@ -247,20 +322,24 @@ namespace Laboras_3
             weirdHeroes.Sort();
             return new HeroesRegister(weirdHeroes);
         }
-
-        public static HashSet<string> GetAllUniqueClassesFromContainers(HeroesContainer[] registers)
+        /// <summary>
+        /// Gets all unique classes from multiple containers
+        /// </summary>
+        /// <param name="registers"></param>
+        /// <returns></returns>
+        public HashSet<string> GetAllUniqueClassesFromContainers(HeroesRegister[] registers)
         {
             HashSet<string> uniqueClasses = new HashSet<string>();
 
             // Iterate through all containers and collect unique classes
             for (int i = 0; i < registers.Length; i++)
             {
-                HeroesContainer container = registers[i];
+                HeroesRegister container = registers[i];
                 if (container == null) continue; // skip null containers
 
                 for (int j = 0; j < container.Count; j++)
                 {
-                    Heroes hero = container.Get(j);
+                    Heroes hero = container.GetHero(j).Clone();
                     if (hero == null) continue;
 
                     uniqueClasses.Add(hero.Class);
@@ -275,43 +354,46 @@ namespace Laboras_3
         /// </summary>
         /// <param name="filePaths"></param>
         /// <returns></returns>
-        public static Heroes[] GetStrongestHeroesAcrossRegisters(string[] filePaths)
+        public Heroes[] GetStrongestHeroesAcrossRegisters(string[] filePaths)
         {
-            HeroesContainer strongestOverall = new HeroesContainer();
+            HeroesContainer allStrongest = new HeroesContainer();
 
             for (int i = 0; i < filePaths.Length; i++)
             {
-                HeroesContainer reg = IOUtils.ReadHeroes(filePaths[i]);
-                Heroes[] strongestInReg = reg.GetStrongestHeroes(); // container method returning array
+                HeroesRegister reg = IOUtils.ReadHeroes(filePaths[i]);
+                Heroes[] strongestInReg = reg.GetStrongestHeroes();
 
-                for (int j = 0; j < strongestInReg.Length; j++)
-                {
-                    Heroes hero = strongestInReg[j];
-
-                    if (strongestOverall.Count == 0)
-                    {
-                        strongestOverall.Add(hero);
-                    }
-                    else if (hero.IsStrongerThan(strongestOverall.Get(0)))
-                    {
-                        strongestOverall = new HeroesContainer();
-                        strongestOverall.Add(hero);
-                    }
-                    else if (hero.IsEqualStrength(strongestOverall.Get(0)))
-                    {
-                        strongestOverall.Add(hero);
-                    }
-                }
+                UpdateStrongestOverall(allStrongest, strongestInReg);
             }
 
-            // Convert container to array to return
-            Heroes[] result = new Heroes[strongestOverall.Count];
-            for (int k = 0; k < strongestOverall.Count; k++)
-                result[k] = strongestOverall.Get(k);
-
-            return result;
+            return ConvertContainerToArray(allStrongest);
         }
+        /// <summary>
+        /// Updates the overall strongest heroes container
+        /// </summary>
+        /// <param name="strongestOverall"></param>
+        /// <param name="strongestInReg"></param>
+        private void UpdateStrongestOverall(HeroesContainer strongestOverall, Heroes[] strongestInReg)
+        {
+            for (int j = 0; j < strongestInReg.Length; j++)
+            {
+                Heroes hero = strongestInReg[j];
 
+                if (strongestOverall.Count == 0)
+                {
+                    strongestOverall.Add(hero);
+                }
+                else if (hero.IsStrongerThan(strongestOverall.Get(0)))
+                {
+                    strongestOverall.Clear();
+                    strongestOverall.Add(hero);
+                }
+                else if (hero.IsEqualStrength(strongestOverall.Get(0)))
+                {
+                    strongestOverall.Add(hero);
+                }
+            }
+        }
 
         /// <summary>
         /// Palieka TRUE, jei pirmasis registras turi mažiau herojų nei antrasis.
@@ -416,5 +498,7 @@ namespace Laboras_3
             // Naudojame herojų skaičių (Count()) hash kodo generavimui.
             return this.Count.GetHashCode();
         }
+
+        
     }
 }

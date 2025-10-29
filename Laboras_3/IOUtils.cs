@@ -14,14 +14,14 @@ namespace Laboras_3
         /// </summary>
         /// <param name="registers"></param>
         /// <param name="fileName"></param>
-        public static void PrintRegistersToFile(HeroesContainer[] registers, string fileName)
+        public static void PrintRegistersToFile(HeroesRegister[] registers, string fileName)
         {
             List<string> lines = new List<string>();
 
             int r = 0;
             while (r < registers.Length)
             {
-                HeroesContainer register = registers[r];
+                HeroesRegister register = registers[r];
 
                 // Print first two lines: race and city
                 lines.Add(register.Race);
@@ -37,7 +37,7 @@ namespace Laboras_3
                 int i = 0;
                 while (i < register.Count)
                 {
-                    lines.Add(register.Get(i).ToString());
+                    lines.Add(register.GetHero(i).ToString());
                     i++;
                 }
 
@@ -50,9 +50,11 @@ namespace Laboras_3
             Console.WriteLine("Failas paruoštas: " + fileName);
         }
 
-        public static void PrintAllClassesToConsole(HeroesContainer[] registers)
+        public static void PrintAllClassesToConsole(HeroesRegister[] registers)
         {
-            HashSet<string> uniqueClasses = HeroesRegister.GetAllUniqueClassesFromContainers(registers);
+            HeroesRegister heroesRegister = new HeroesRegister();
+            HeroesRegister[] containers = registers.Cast<HeroesRegister>().ToArray();
+            HashSet<string> uniqueClasses = heroesRegister.GetAllUniqueClassesFromContainers(containers);
 
             Console.WriteLine("Visos unikalios klasės:");
             foreach (var heroClass in uniqueClasses)
@@ -67,7 +69,7 @@ namespace Laboras_3
         /// <param name="registers"></param>
         /// <param name="fileName"></param>
         public static void PrintAllMissingClassesToCSV(
-    HeroesContainer[] registers, string fileName)
+    HeroesRegister[] registers, string fileName)
         {
             if (registers.Count() < 2)
             {
@@ -84,7 +86,7 @@ namespace Laboras_3
                 reg.City = registers[i].City;
                 heroRegisters[i] = reg;
             }
-            var allMissing = HeroesRegister.GetAllMissingClasses(heroRegisters);
+            var allMissing = heroRegisters[0].GetAllMissingClasses(heroRegisters);
 
             // Determine max row count in one pass
             int maxRows = allMissing.Max(list => list.Count);
@@ -115,9 +117,9 @@ namespace Laboras_3
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        public static HeroesContainer ReadHeroes(string filePath)
+        public static HeroesRegister ReadHeroes(string filePath)
         {
-            HeroesContainer allHeroes = new HeroesContainer();
+            HeroesRegister allHeroes = new HeroesRegister();
             string[] lines = File.ReadAllLines(filePath, Encoding.UTF8);
 
             if (lines.Length < 3)
@@ -140,16 +142,16 @@ namespace Laboras_3
                     int.Parse(values[6]), int.Parse(values[7]),
                     int.Parse(values[8]), int.Parse(values[9])
                 );
-                allHeroes.Add(hero);
+                allHeroes.AddHero(hero);
                 i++;
             }
 
             return allHeroes;
         }
 
-        public static HeroesContainer[] ReadMultipleHeroes(string[] files)
+        public static HeroesRegister[] ReadMultipleHeroes(string[] files)
         {
-            HeroesContainer[] allRegisters = new HeroesContainer[files.Length];
+            HeroesRegister[] allRegisters = new HeroesRegister[files.Length];
 
             for (int i = 0; i < files.Length; i++)
             {
@@ -163,18 +165,21 @@ namespace Laboras_3
         /// Prints the strongest heroes across multiple files
         /// </summary>
         /// <param name="filePaths"></param>
-        public static void PrintStrongestHeroesInEachFile(string[] filePaths)
+        public static void PrintStrongestHeroesInEachFile(string[] filePaths, HeroesRegister[] register)
         {
+            int r = 0;
             for (int f = 0; f < filePaths.Length; f++)
             {
-                HeroesContainer register = ReadHeroes(filePaths[f]);
-                Heroes[] strongestHeroes = HeroesRegister.GetStrongestHeroesInRegister(register);
+                HeroesRegister registers = register[r];
+                HeroesRegister heroesRegister = ReadHeroes(filePaths[f]);
+                HeroesRegister currentRegister = heroesRegister;
+                Heroes[] strongestHeroes = currentRegister.GetStrongestHeroesInRegister(currentRegister);
                 if (strongestHeroes.Length == 0)
                 {
                     Console.WriteLine($"Herojų nėra faile: {filePaths[f]}");
                     continue;
                 }
-                Console.WriteLine($"Stipriausias(i) herojus(-iai) rasėje: {register.Race}");
+                Console.WriteLine($"Stipriausias(i) herojus(-iai) rasėje: {registers.Race}");
                 Console.WriteLine(new string('-', 149));
                 Console.WriteLine(string.Format("|{0,-20}|{1,-15}|{2,20}|{3,10}|{4,15}" +
                     "|{5,15}|{6,10}|{7,10}|{8,6}|{9,15}|",

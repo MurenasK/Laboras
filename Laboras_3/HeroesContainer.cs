@@ -9,41 +9,55 @@ namespace Laboras_3
     class HeroesContainer
     {
         private Heroes[] Heroes;
-        private int Capacity { get; set; }
-
+        private int Capacity;
+        
         public int Count { get; private set; }
-
-        public string Race { get; set; }
-        public string City { get; set; }
+        /// <summary>
+        /// Heroes container constructor
+        /// </summary>
+        /// <param name="allRegisters"></param>
         public HeroesContainer(HeroesContainer[] allRegisters)
         {
             this.Heroes = new Heroes[16];
         }
- 
+        /// <summary>
+        /// Here we set the capacity of the container
+        /// </summary>
+        /// <param name="capacity"></param>
         public HeroesContainer(int capacity = 16)
         {
             this.Capacity = capacity;
             this.Heroes = new Heroes[capacity];
         }
-
+        /// <summary>
+        /// Get hero by index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public Heroes Get(int index)
         {
             if (index < 0 || index >= Count)
             {
                 Console.WriteLine("Nėra tokio indexo");
             }
-            return Heroes[index];
+            return Heroes[index].Clone();
         }
-
+        /// <summary>
+        /// Adds hero to the container
+        /// </summary>
+        /// <param name="hero"></param>
         public void Add(Heroes hero)
         {
             if (this.Count >= this.Capacity)
             {
                 EnsureCapacity(this.Capacity * 2);
             }
-            this.Heroes[this.Count++] = hero;
+            this.Heroes[this.Count++] = hero.Clone();
         }
-
+        /// <summary>
+        /// Ensures capacity of the container
+        /// </summary>
+        /// <param name="minimumCapacity"></param>
         private void EnsureCapacity(int minimumCapacity)
         {
             if (minimumCapacity > this.Capacity)
@@ -57,7 +71,33 @@ namespace Laboras_3
                 this.Heroes = temp;
             }
         }
+        /// <summary>
+        /// Swaps heroes if they are out of order
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private bool SwapIfOutOfOrder(int index)
+        {
+            // bounds safety: index and index+1 must be valid positions within Count
+            if (index < 0 || index + 1 >= this.Count) return false;
 
+            Heroes a = this.Heroes[index];
+            Heroes b = this.Heroes[index + 1];
+
+            if (a == null || b == null) return false;
+
+            // keep original ordering: if a < b (according to CompareTo) then swap
+            if (a.CompareTo(b) < 0)
+            {
+                this.Heroes[index] = b;
+                this.Heroes[index + 1] = a;
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// Sorts the container using bubble sort
+        /// </summary>
         public void Sort()
         {
             bool flag = true;
@@ -66,18 +106,15 @@ namespace Laboras_3
                 flag = false;
                 for (int i = 0; i < this.Count - 1; i++)
                 {
-                    Heroes a = this.Heroes[i];
-                    Heroes b = this.Heroes[i + 1];
-                    if (a.CompareTo(b) < 0)
-                    {
-                        this.Heroes[i] = b;
-                        this.Heroes[i + 1] = a;
+                    if (SwapIfOutOfOrder(i))
                         flag = true;
-                    }
                 }
             }
         }
-
+        /// <summary>
+        /// Heroes container copy constructor
+        /// </summary>
+        /// <param name="container"></param>
         public HeroesContainer(HeroesContainer container) : this()
         {
             for(int i = 0; i < container.Count; i++)
@@ -86,46 +123,33 @@ namespace Laboras_3
                 this.Add(container.Get(i));
             }
         }
-
-        public Heroes[] GetStrongestHeroes()
+        /// <summary>
+        /// Clears the container
+        /// </summary>
+        public void Clear()
         {
-            if (this.Count == 0) return new Heroes[0];
-
-            HeroesContainer strongest = new HeroesContainer();
-            strongest.Add(this.Get(0));
-
-            for (int i = 1; i < this.Count; i++)
-            {
-                Heroes hero = this.Get(i);
-
-                if (hero.IsStrongerThan(strongest.Get(0)))
-                {
-                    strongest = new HeroesContainer();
-                    strongest.Add(hero);
-                }
-                else if (hero.IsEqualStrength(strongest.Get(0)))
-                {
-                    strongest.Add(hero);
-                }
-            }
-
-            // Convert to array
-            Heroes[] result = new Heroes[strongest.Count];
-            for (int i = 0; i < strongest.Count; i++)
-                result[i] = strongest.Get(i);
-
-            return result;
+            for (int i = 0; i < Count; i++)
+                Heroes[i] = null; // release references
+            Count = 0;
         }
-
+        /// <summary>
+        /// Puts hero at index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="hero"></param>
         public void Put(int index, Heroes hero)
         {
             if (index < 0 || index >= Count)
             {
                 Console.WriteLine("Nėra tokio indexo");
             }
-            this.Heroes[index] = hero;
+            this.Heroes[index] = hero.Clone();
         }
-
+        /// <summary>
+        /// Inserts hero at index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="hero"></param>
         public void Insert(int index, Heroes hero)
         {
             if (index < 0 || index > Count)
@@ -145,10 +169,13 @@ namespace Laboras_3
             {
                 this.Heroes[i] = this.Heroes[i - 1];
             }
-            this.Heroes[index] = hero;
+            this.Heroes[index] = hero.Clone();
             this.Count++;
         }
-
+        /// <summary>
+        /// Removes hero at index
+        /// </summary>
+        /// <param name="index"></param>
         public void RemoveAt(int index)
         {
             if (index < 0 || index >= Count)
@@ -162,7 +189,10 @@ namespace Laboras_3
             this.Heroes[this.Count - 1] = null;
             this.Count--;
         }
-
+        /// <summary>
+        /// Removes hero from container
+        /// </summary>
+        /// <param name="hero"></param>
         public void Remove(Heroes hero)
         {
             for (int i = 0; i < this.Count; i++)

@@ -12,20 +12,28 @@ namespace Laboras_3
             /// Define input files
             string[] heroFiles = { "heroes3.csv", "heroes4.csv" };
             // Read all registers from files
-            HeroesContainer[] allRegisters = IOUtils.ReadMultipleHeroes(
+            HeroesRegister[] allRegisters = IOUtils.ReadMultipleHeroes(
                 heroFiles);
-            HeroesContainer[] originalCopy = (HeroesContainer[])allRegisters.Clone();
+            // Make a copy of original data for later use
+            HeroesRegister[] originalCopy = (HeroesRegister[])allRegisters.Clone();
+            // Print all registers to a single file
             IOUtils.PrintRegistersToFile(allRegisters,
                 "PradDuomenys.txt");
-
-            IOUtils.PrintStrongestHeroesInEachFile(heroFiles);
+            // Print strongest heroes in each file
+            IOUtils.PrintStrongestHeroesInEachFile(heroFiles, allRegisters);
+            //// Print all classes to console
             IOUtils.PrintAllClassesToConsole(originalCopy);
+            // Print all missing classes to CSV
             IOUtils.PrintAllMissingClassesToCSV(originalCopy,
                 "TrukstamosKlasės.csv");
-            HeroesRegister weirdHeroes = HeroesRegister.GetWeirdHeroes(
+            HeroesRegister tempRegister = new HeroesRegister();
+            // Print weird heroes to CSV
+            HeroesRegister weirdHeroes = tempRegister.GetWeirdHeroes(
                 allRegisters);
+            // Output weird heroes to file
             IOUtils.PrintWeirdHeroesToCSV(weirdHeroes,
                 "Herojai.csv");
+            // Indicate successful generation
             Console.WriteLine("Visi failai sugeneruoti sėkmingai.");
         }
     }
