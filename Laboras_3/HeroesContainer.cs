@@ -15,11 +15,11 @@ namespace Laboras_3
 
         public string Race { get; set; }
         public string City { get; set; }
-        public HeroesContainer()
+        public HeroesContainer(HeroesContainer[] allRegisters)
         {
             this.Heroes = new Heroes[16];
         }
-
+ 
         public HeroesContainer(int capacity = 16)
         {
             this.Capacity = capacity;
@@ -53,7 +53,7 @@ namespace Laboras_3
                 {
                     temp[i] = this.Heroes[i];
                 }
-                this.Capacity -= minimumCapacity;
+                this.Capacity = minimumCapacity;
                 this.Heroes = temp;
             }
         }
@@ -72,7 +72,7 @@ namespace Laboras_3
                     {
                         this.Heroes[i] = b;
                         this.Heroes[i + 1] = a;
-                        flag = false;
+                        flag = true;
                     }
                 }
             }
@@ -131,6 +131,11 @@ namespace Laboras_3
             if (index < 0 || index > Count)
             {
                 Console.WriteLine("Nėra tokio indexo");
+            }
+            if (this.Count + 1 > this.Capacity)
+            {
+                int newCapacity = Math.Max(this.Capacity * 2, this.Capacity + 1);
+                EnsureCapacity(newCapacity);
             }
             if (this.Count >= this.Capacity)
             {

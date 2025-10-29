@@ -49,40 +49,17 @@ namespace Laboras_3
             File.WriteAllLines(fileName, lines, Encoding.UTF8);
             Console.WriteLine("Failas paruoštas: " + fileName);
         }
-        /// <summary>
-        /// Prints all unique classes from all registers to a CSV file
-        /// </summary>
-        /// <param name="registers"></param>
-        /// <param name="fileName"></param>
-        public static void PrintAllClassesToCSV(HeroesContainer[] registers, string fileName)
+
+        public static void PrintAllClassesToConsole(HeroesContainer[] registers)
         {
-            List<string> uniqueClasses = new List<string>();
+            HashSet<string> uniqueClasses = HeroesRegister.GetAllUniqueClassesFromContainers(registers);
 
-            // Iterate through all containers and collect unique classes
-            for (int i = 0; i < registers.Length; i++)
+            Console.WriteLine("Visos unikalios klasės:");
+            foreach (var heroClass in uniqueClasses)
             {
-                HeroesContainer container = registers[i];
-                if (container == null) continue; // skip null containers
-
-                for (int j = 0; j < container.Count; j++)
-                {
-                    Heroes hero = container.Get(j);
-                    if (hero == null) continue;
-
-                    if (!uniqueClasses.Contains(hero.Class))
-                    {
-                        uniqueClasses.Add(hero.Class);
-                    }
-                }
+                Console.WriteLine(heroClass);
             }
-
-            // Write to CSV
-            List<string> lines = new List<string> { "Klasės" };
-            lines.AddRange(uniqueClasses);
-
-            File.WriteAllLines(fileName, lines, Encoding.UTF8);
         }
-
 
         /// <summary>
         /// Prints all missing classes between two registers to a CSV file
@@ -182,69 +159,72 @@ namespace Laboras_3
             return allRegisters;
         }
 
-        public static void PrintRegistersToConsole(HeroesContainer[] registers)
+        /// <summary>
+        /// Prints the strongest heroes across multiple files
+        /// </summary>
+        /// <param name="filePaths"></param>
+        public static void PrintStrongestHeroesInEachFile(string[] filePaths)
         {
-            for (int r = 0; r < registers.Length; r++)
+            for (int f = 0; f < filePaths.Length; f++)
             {
-                HeroesContainer register = registers[r];
-
-                Console.WriteLine(register.Race);
-                Console.WriteLine(register.City);
-
+                HeroesContainer register = ReadHeroes(filePaths[f]);
+                Heroes[] strongestHeroes = HeroesRegister.GetStrongestHeroesInRegister(register);
+                if (strongestHeroes.Length == 0)
+                {
+                    Console.WriteLine($"Herojų nėra faile: {filePaths[f]}");
+                    continue;
+                }
+                Console.WriteLine($"Stipriausias(i) herojus(-iai) rasėje: {register.Race}");
                 Console.WriteLine(new string('-', 149));
                 Console.WriteLine(string.Format("|{0,-20}|{1,-15}|{2,20}|{3,10}|{4,15}" +
                     "|{5,15}|{6,10}|{7,10}|{8,6}|{9,15}|",
                     "Vardas", "Klasė", "Gyvybės taškai", "Ištvermė", "Atakos Taškai",
                     "Gynybos taškai", "Galia", "Judėjimas", "IQ", "Spec. Galia"));
                 Console.WriteLine(new string('-', 149));
-
-                for (int i = 0; i < register.Count; i++)
+                for (int k = 0; k < strongestHeroes.Length; k++)
                 {
-                    Console.WriteLine(register.Get(i).ToString());
+                    Console.WriteLine(strongestHeroes[k].ToString());
                 }
-
                 Console.WriteLine(new string('-', 149));
-                Console.WriteLine();
             }
         }
 
-
-        /// <summary>
-        /// Prints the strongest heroes across multiple files
-        /// </summary>
-        /// <param name="filePaths"></param>
-        public static void PrintStrongestHeroesAcrossFiles(string[] filePaths)
+        public static void PrintWeirdHeroesToCSV(HeroesRegister weirdHeroes, string fileName)
         {
-            // Read the strongest heroes across files into a container
-            Heroes[] strongestHeroes = HeroesRegister.GetStrongestHeroesAcrossRegisters(filePaths);
-            HeroesContainer strongest = new HeroesContainer();
-            foreach (var hero in strongestHeroes)
+            if (weirdHeroes == null || weirdHeroes.Count == 0)
             {
-                strongest.Add(hero);
-            }
-
-            if (strongest.Count == 0)
-            {
-                Console.WriteLine("Herojų nėra");
+                Console.WriteLine(weirdHeroes.Count);
+                Console.WriteLine("Nėra keistų herojų, ką spausdinti į CSV.");
                 return;
             }
 
-            Console.WriteLine("Stipriausias(i) herojus(-iai) tarp visų grupių:");
-            Console.WriteLine(new string('-', 149));
-            Console.WriteLine(string.Format("|{0,-20}|{1,-15}|{2,20}|{3,10}|{4,15}" +
-                "|{5,15}|{6,10}|{7,10}|{8,6}|{9,15}|",
-                "Vardas", "Klasė", "Gyvybės taškai", "Ištvermė", "Atakos Taškai",
-                "Gynybos taškai", "Galia", "Judėjimas", "IQ", "Spec. Galia"));
-            Console.WriteLine(new string('-', 149));
+            List<string> lines = new List<string>();
 
-            int k = 0;
-            while (k < strongest.Count)
+            // Header line
+            lines.Add("Vardas,Klasė,Gyvybės taškai,Ištvermė,Atakos Taškai,Gynybos taškai,Galia,Judėjimas,IQ,Spec. Galia");
+
+            int i = 0;
+            while (i < weirdHeroes.Count)
             {
-                Console.WriteLine(strongest.Get(k).ToString());
-                k++;
+                Heroes hero = weirdHeroes.GetHero(i);
+                string line =
+                    hero.Name + "," +
+                    hero.Class + "," +
+                    hero.LifePoints + "," +
+                    hero.Mana + "," +
+                    hero.DmgPoints + "," +
+                    hero.DefPoints + "," +
+                    hero.Power + "," +
+                    hero.Movement + "," +
+                    hero.IQ + "," +
+                    hero.SpecPower;
+
+                lines.Add(line);
+                i++;
             }
 
-            Console.WriteLine(new string('-', 149));
+            File.WriteAllLines(fileName, lines, Encoding.UTF8);
+            Console.WriteLine("CSV failas sėkmingai sukurtas: " + fileName);
         }
 
     }

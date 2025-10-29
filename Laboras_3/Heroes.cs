@@ -56,19 +56,22 @@ namespace Laboras_3
         
         public int CompareTo(Heroes other)
         {
-            if (other == null) return 1;
+            if (other == null)
+            {
+                return 1;
+            }
 
             int lifePointsComparison = this.LifePoints.CompareTo(other.LifePoints);
-            if(lifePointsComparison != 0)
+            if (lifePointsComparison != 0)
             {
                 return lifePointsComparison;
             }
             int defPointsComparison = this.DefPoints.CompareTo(other.DefPoints);
-            if(defPointsComparison != 0)
+            if (defPointsComparison != 0)
             {
                 return defPointsComparison;
             }
-            return this.Name.CompareTo(other.Name);
+            return string.Compare(other.Name, this.Name, StringComparison.OrdinalIgnoreCase);
         }
 
         public Heroes Clone()
@@ -99,6 +102,17 @@ namespace Laboras_3
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
+        /// 
+
+        public int IsWeird()
+        {
+            if (LifePoints > DefPoints)
+            {
+                return 1;
+            }
+            return 0;
+        }
+
         public bool IsStrongerThan(Heroes other)
         {
             return this.PowerScore() > other.PowerScore();

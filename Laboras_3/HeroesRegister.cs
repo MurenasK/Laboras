@@ -13,6 +13,8 @@ namespace Laboras_3
         public string Race { get; set; }
         public string City { get; set; }
 
+        public HeroesContainer Weirdos = new HeroesContainer();
+
         private HeroesContainer heroes = new HeroesContainer();
 
         public HeroesRegister(HeroesContainer container)
@@ -213,6 +215,59 @@ namespace Laboras_3
             }
 
             return allMissing;
+        }
+
+        public static Heroes[] GetStrongestHeroesInRegister(
+            HeroesContainer register)
+        {
+            return register.GetStrongestHeroes();
+        }
+
+        public static HeroesRegister GetWeirdHeroes(
+            HeroesContainer[] registers)
+        {
+            HeroesContainer weirdHeroes = new HeroesContainer();
+            int temp = 0;
+            for (int i = 0; i < registers.Length; i++)
+            {
+                HeroesContainer container = registers[i];
+                if (container == null) continue; // skip null containers
+                for (int j = 0; j < container.Count; j++)
+                {
+                    Heroes hero = container.Get(j);
+                    if (hero == null) continue;
+                    // Check for weird characteristics
+                    if (hero.IsWeird() == 1)
+                    {
+                        weirdHeroes.Insert(temp, hero);
+                        temp++;
+                    }
+                }
+            }
+            weirdHeroes.Sort();
+            return new HeroesRegister(weirdHeroes);
+        }
+
+        public static HashSet<string> GetAllUniqueClassesFromContainers(HeroesContainer[] registers)
+        {
+            HashSet<string> uniqueClasses = new HashSet<string>();
+
+            // Iterate through all containers and collect unique classes
+            for (int i = 0; i < registers.Length; i++)
+            {
+                HeroesContainer container = registers[i];
+                if (container == null) continue; // skip null containers
+
+                for (int j = 0; j < container.Count; j++)
+                {
+                    Heroes hero = container.Get(j);
+                    if (hero == null) continue;
+
+                    uniqueClasses.Add(hero.Class);
+                }
+            }
+
+            return uniqueClasses;
         }
 
         /// <summary>

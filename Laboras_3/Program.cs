@@ -11,26 +11,21 @@ namespace Laboras_3
 
             /// Define input files
             string[] heroFiles = { "heroes3.csv", "heroes4.csv" };
-            /// Read all registers from input files
-            //List<HeroesRegister> allRegisters = new List<HeroesRegister>();
-            HeroesContainer[] allRegisters = IOUtils.ReadMultipleHeroes(heroFiles);
-
-            IOUtils.PrintRegistersToConsole(allRegisters);
-
+            // Read all registers from files
+            HeroesContainer[] allRegisters = IOUtils.ReadMultipleHeroes(
+                heroFiles);
+            HeroesContainer[] originalCopy = (HeroesContainer[])allRegisters.Clone();
             IOUtils.PrintRegistersToFile(allRegisters,
                 "PradDuomenys.txt");
-            //allRegisters.Add(IOUtils.ReadHeroes(@"heroes3.csv"));
-            //allRegisters.Add(IOUtils.ReadHeroes(@"heroes4.csv"));
-            /// Print all registers to a single output file
-            //IOUtils.PrintAllRegistersToFile(allHeroes, "PradDuomenys.txt");
-            /// Print all unique classes to a CSV file
-            IOUtils.PrintAllClassesToCSV(allRegisters, "Klases.csv");
-            /// Print all missing classes to a CSV file
-            IOUtils.PrintAllMissingClassesToCSV(allRegisters,
+
+            IOUtils.PrintStrongestHeroesInEachFile(heroFiles);
+            IOUtils.PrintAllClassesToConsole(originalCopy);
+            IOUtils.PrintAllMissingClassesToCSV(originalCopy,
                 "TrukstamosKlasės.csv");
-            /// Print the strongest heroes across all files to a CSV file
-            IOUtils.PrintStrongestHeroesAcrossFiles(heroFiles);
-            /// Notify user of successful file generation
+            HeroesRegister weirdHeroes = HeroesRegister.GetWeirdHeroes(
+                allRegisters);
+            IOUtils.PrintWeirdHeroesToCSV(weirdHeroes,
+                "Herojai.csv");
             Console.WriteLine("Visi failai sugeneruoti sėkmingai.");
         }
     }
