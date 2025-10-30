@@ -72,45 +72,34 @@ namespace Laboras_3
             }
         }
         /// <summary>
-        /// Swaps heroes if they are out of order
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        private bool SwapIfOutOfOrder(int index)
-        {
-            // bounds safety: index and index+1 must be valid positions within Count
-            if (index < 0 || index + 1 >= this.Count) return false;
-
-            Heroes a = this.Heroes[index];
-            Heroes b = this.Heroes[index + 1];
-
-            if (a == null || b == null) return false;
-
-            // keep original ordering: if a < b (according to CompareTo) then swap
-            if (a.CompareTo(b) < 0)
-            {
-                this.Heroes[index] = b;
-                this.Heroes[index + 1] = a;
-                return true;
-            }
-            return false;
-        }
-        /// <summary>
-        /// Sorts the container using bubble sort
+        /// Išrikiuoja herojus pagal stiprumą (nuo stipriausio iki silpniausio)
+        /// naudojant išrinkimo rūšiavimą.
         /// </summary>
         public void Sort()
         {
-            bool flag = true;
-            while (flag)
+            for (int i = 0; i < Count - 1; i++)
             {
-                flag = false;
-                for (int i = 0; i < this.Count - 1; i++)
+                int maxIndex = i; // laikome, kad dabartinis didžiausias yra i
+
+                for (int j = i + 1; j < Count; j++)
                 {
-                    if (SwapIfOutOfOrder(i))
-                        flag = true;
+                    // Jei randame stipresnį herojų – išsaugome jo indeksą
+                    if (Heroes[j].CompareTo(Heroes[maxIndex]) > 0)
+                    {
+                        maxIndex = j;
+                    }
+                }
+
+                // Jei radome kitą didesnį – sukeičiam vietomis
+                if (maxIndex != i)
+                {
+                    Heroes temp = Heroes[i];
+                    Heroes[i] = Heroes[maxIndex];
+                    Heroes[maxIndex] = temp;
                 }
             }
         }
+
         /// <summary>
         /// Heroes container copy constructor
         /// </summary>
