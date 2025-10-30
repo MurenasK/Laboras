@@ -62,7 +62,7 @@ namespace Laboras_3
                 Console.WriteLine(heroClass);
             }
         }
-
+        
         public static void PrintAllMissingClassesToCSV(HeroesRegister[] registers, string fileName)
         {
             if (registers.Length < 2)
