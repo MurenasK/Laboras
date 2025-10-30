@@ -63,53 +63,53 @@ namespace Laboras_3
             }
         }
 
-        /// <summary>
-        /// Prints all missing classes between two registers to a CSV file
-        /// </summary>
-        /// <param name="registers"></param>
-        /// <param name="fileName"></param>
-        public static void PrintAllMissingClassesToCSV(
-    HeroesRegister[] registers, string fileName)
+        public static void PrintAllMissingClassesToCSV(HeroesRegister[] registers, string fileName)
         {
-            if (registers.Count() < 2)
+            if (registers.Length < 2)
             {
-                Console.WriteLine(
-                    "Reikia bent dviejų registrų trūkstamų klasių palyginimui");
+                Console.WriteLine("Reikia bent dviejų registrų trūkstamų klasių palyginimui");
                 return;
             }
-            // Convert HeroesContainer[] to HeroesRegister[]
+
+            // Clone all registers using Clone()
             HeroesRegister[] heroRegisters = new HeroesRegister[registers.Length];
             for (int i = 0; i < registers.Length; i++)
             {
-                HeroesRegister reg = new HeroesRegister(registers[i]);
-                reg.Race = registers[i].Race;
-                reg.City = registers[i].City;
-                heroRegisters[i] = reg;
+                heroRegisters[i] = registers[i];
             }
-            var allMissing = heroRegisters[0].GetAllMissingClasses(heroRegisters);
 
-            // Determine max row count in one pass
+            var allMissing = heroRegisters[0].GetAllMissingClasses(heroRegisters);
             int maxRows = allMissing.Max(list => list.Count);
 
-            var lines = new List<string>();
+            // Write CSV file
+            var lines = BuildCsvLines(registers, allMissing, maxRows);
+            File.WriteAllLines(fileName, lines, Encoding.UTF8);
+        }
 
-            // Header (race names)
-            lines.Add(string.Join(";", registers.Select(r => r.Race)));
+        /// <summary>
+        /// Builds CSV lines from missing classes data.
+        /// </summary>
+        private static List<string> BuildCsvLines(HeroesRegister[] registers, List<List<string>> allMissing, int maxRows)
+        {
+            var lines = new List<string>
+        {
+            string.Join(";", registers.Select(r => r.Race)) // Header
+            };
 
-            // Data rows
             for (int row = 0; row < maxRows; row++)
             {
                 var rowValues = new List<string>();
                 for (int col = 0; col < allMissing.Count; col++)
                 {
-                    rowValues.Add(
-                        row < allMissing[col].Count ? allMissing[col][row] : "");
+                    rowValues.Add(row < allMissing[col].Count ? allMissing[col][row] : "");
                 }
                 lines.Add(string.Join(";", rowValues));
             }
 
-            File.WriteAllLines(fileName, lines, Encoding.UTF8);
+            return lines;
         }
+
+
 
 
         /// <summary>
@@ -148,7 +148,11 @@ namespace Laboras_3
 
             return allHeroes;
         }
-
+        /// <summary>
+        /// Reads multiple heroes from given file paths
+        /// </summary>
+        /// <param name="files"></param>
+        /// <returns></returns>
         public static HeroesRegister[] ReadMultipleHeroes(string[] files)
         {
             HeroesRegister[] allRegisters = new HeroesRegister[files.Length];
