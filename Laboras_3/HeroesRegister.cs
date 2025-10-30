@@ -329,7 +329,8 @@ namespace Laboras_3
         /// </summary>
         /// <param name="registers"></param>
         /// <returns></returns>
-        public HashSet<string> GetAllUniqueClassesFromContainers(HeroesRegister[] registers)
+        public HashSet<string> GetAllUniqueClassesFromContainers(HeroesRegister[]
+            registers)
         {
             HashSet<string> uniqueClasses = new HashSet<string>();
 
@@ -375,7 +376,8 @@ namespace Laboras_3
         /// </summary>
         /// <param name="strongestOverall"></param>
         /// <param name="strongestInReg"></param>
-        private void UpdateStrongestOverall(HeroesContainer strongestOverall, Heroes[] strongestInReg)
+        private void UpdateStrongestOverall(HeroesContainer strongestOverall,
+            Heroes[] strongestInReg)
         {
             for (int j = 0; j < strongestInReg.Length; j++)
             {
@@ -500,7 +502,5 @@ namespace Laboras_3
             // Naudojame herojų skaičių (Count()) hash kodo generavimui.
             return this.Count.GetHashCode();
         }
-
-        
     }
 }

@@ -104,6 +104,9 @@ namespace Laboras_3
         /// <returns></returns>
         /// 
 
+        /// <summary>
+        /// Checks if a hero is weird
+        /// </summary>
         public int IsWeird()
         {
             if (LifePoints > DefPoints)
@@ -112,7 +115,11 @@ namespace Laboras_3
             }
             return 0;
         }
-
+        /// <summary>
+        /// Checks if one hero is stronger than another
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool IsStrongerThan(Heroes other)
         {
             return this.PowerScore() > other.PowerScore();
@@ -126,7 +133,11 @@ namespace Laboras_3
         {
             return this.PowerScore() == other.PowerScore();
         }
-
+        /// <summary>
+        /// Equals override
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             return obj is Heroes heroes &&
@@ -142,12 +153,17 @@ namespace Laboras_3
                    SpecPower == heroes.SpecPower &&
                    Strength == heroes.Strength;
         }
-
+        /// <summary>
+        /// Get hash code override
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             int hashCode = 928105462;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Class);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.
+                Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.
+                Default.GetHashCode(Class);
             hashCode = hashCode * -1521134295 + LifePoints.GetHashCode();
             hashCode = hashCode * -1521134295 + Mana.GetHashCode();
             hashCode = hashCode * -1521134295 + DmgPoints.GetHashCode();
