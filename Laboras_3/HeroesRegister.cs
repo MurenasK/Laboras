@@ -102,6 +102,8 @@ namespace Laboras_3
         /// </summary>
         /// <param name="register"></param>
         /// <returns></returns>
+        /// 
+        // forai
         public Heroes[] GetStrongestHeroes()
         {
             if (heroes.Count == 0) return new Heroes[0];

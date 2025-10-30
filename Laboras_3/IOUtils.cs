@@ -199,29 +199,29 @@ namespace Laboras_3
             if (weirdHeroes == null || weirdHeroes.Count == 0)
             {
                 Console.WriteLine(weirdHeroes.Count);
-                Console.WriteLine("Nėra keistų herojų, ką spausdinti į CSV.");
+                Console.WriteLine("Nėra herojų, ką spausdinti į CSV.");
                 return;
             }
 
             List<string> lines = new List<string>();
 
             // Header line
-            lines.Add("Vardas,Klasė,Gyvybės taškai,Ištvermė,Atakos Taškai,Gynybos taškai,Galia,Judėjimas,IQ,Spec. Galia");
+            lines.Add("Vardas;Klasė;Gyvybės taškai;Ištvermė;Atakos Taškai;Gynybos taškai;Galia;Judėjimas;IQ;Spec. Galia");
 
             int i = 0;
             while (i < weirdHeroes.Count)
             {
                 Heroes hero = weirdHeroes.GetHero(i);
                 string line =
-                    hero.Name + "," +
-                    hero.Class + "," +
-                    hero.LifePoints + "," +
-                    hero.Mana + "," +
-                    hero.DmgPoints + "," +
-                    hero.DefPoints + "," +
-                    hero.Power + "," +
-                    hero.Movement + "," +
-                    hero.IQ + "," +
+                    hero.Name + ";" +
+                    hero.Class + ";" +
+                    hero.LifePoints + ";" +
+                    hero.Mana + ";" +
+                    hero.DmgPoints + ";" +
+                    hero.DefPoints + ";" +
+                    hero.Power + ";" +
+                    hero.Movement + ";" +
+                    hero.IQ + ";" +
                     hero.SpecPower;
 
                 lines.Add(line);

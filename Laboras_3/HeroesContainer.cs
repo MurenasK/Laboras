@@ -109,7 +109,7 @@ namespace Laboras_3
             for(int i = 0; i < container.Count; i++)
             {
                 Heroes clonedHeroes = container.Get(i).Clone();
-                this.Add(container.Get(i));
+                this.Add(container.Get(i).Clone());
             }
         }
         /// <summary>
