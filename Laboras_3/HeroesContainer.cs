@@ -10,7 +10,24 @@ namespace Laboras_3
     {
         private Heroes[] Heroes;
         private int Capacity;
-        
+
+        /// <summary>
+        /// Checks if the container contains a specific hero.
+        /// </summary>
+        /// <param name="hero">Hero to search for.</param>
+        /// <returns>True if the hero exists, otherwise false.</returns>
+        public bool Contains(Heroes hero)
+        {
+            for (int i = 0; i < this.Count; i++)
+            {
+                if (this.Heroes[i].Equals(hero))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public int Count { get; private set; }
         /// <summary>
         /// Heroes container constructor
