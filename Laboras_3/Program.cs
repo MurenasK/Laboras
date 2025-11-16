@@ -10,12 +10,13 @@ namespace Laboras_3
         {
             // masyvai registro tipo
             /// Define input files
-            string[] heroFiles = { "heroes1.csv", "heroes2.csv" };
+            string[] heroFiles = { "heroes3.csv", "heroes4.csv" };
             // Read all registers from files
             HeroesRegister[] allRegisters = IOUtils.ReadMultipleHeroes(
                 heroFiles);
             // Make a copy of original data for later use
-            HeroesRegister[] originalCopy = (HeroesRegister[])allRegisters.Clone();
+            HeroesRegister[] originalCopy = (HeroesRegister[])allRegisters.
+                Clone();
             // Print all registers to a single file
             // Print all registers to a single file
             IOUtils.PrintRegistersToFile(allRegisters,

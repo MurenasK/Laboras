@@ -70,11 +70,13 @@ namespace Laboras_3
             }
         }
         
-        public static void PrintAllMissingClassesToCSV(HeroesRegister[] registers, string fileName)
+        public static void PrintAllMissingClassesToCSV(HeroesRegister[] registers,
+            string fileName)
         {
             if (registers.Length < 2)
             {
-                Console.WriteLine("Reikia bent dviejų registrų trūkstamų klasių palyginimui");
+                Console.WriteLine("Reikia bent dviejų registrų trūkstamų" +
+                    " klasių palyginimui");
                 return;
             }
 
@@ -96,7 +98,8 @@ namespace Laboras_3
         /// <summary>
         /// Builds CSV lines from missing classes data.
         /// </summary>
-        private static List<string> BuildCsvLines(HeroesRegister[] registers, List<List<string>> allMissing, int maxRows)
+        private static List<string> BuildCsvLines(HeroesRegister[] registers,
+            List<List<string>> allMissing, int maxRows)
         {
             var lines = new List<string>
         {
@@ -108,7 +111,8 @@ namespace Laboras_3
                 var rowValues = new List<string>();
                 for (int col = 0; col < allMissing.Count; col++)
                 {
-                    rowValues.Add(row < allMissing[col].Count ? allMissing[col][row] : "");
+                    rowValues.Add(row < allMissing[col].Count ?
+                        allMissing[col][row] : "");
                 }
                 lines.Add(string.Join(",", rowValues));
             }
@@ -219,7 +223,6 @@ namespace Laboras_3
         {
             if (weirdHeroes == null || weirdHeroes.Count == 0)
             {
-                Console.WriteLine(weirdHeroes.Count);
                 Console.WriteLine("Nėra herojų, ką spausdinti į CSV.");
                 return;
             }
@@ -227,8 +230,8 @@ namespace Laboras_3
             List<string> lines = new List<string>();
 
             // Header line
-            lines.Add("Vardas;Klasė;Gyvybės taškai;Ištvermė;Atakos Taškai;" +
-                "Gynybos taškai;Galia;Judėjimas;IQ;Spec. Galia");
+            lines.Add("Vardas,Klasė,Gyvybės taškai,Ištvermė,Atakos Taškai," +
+                "Gynybos taškai,Galia,udėjimas,IQ,Spec. Galia");
 
             int i = 0;
             while (i < weirdHeroes.Count)

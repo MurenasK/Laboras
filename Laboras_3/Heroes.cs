@@ -61,7 +61,8 @@ namespace Laboras_3
                 return 1;
             }
 
-            int lifePointsComparison = this.LifePoints.CompareTo(other.LifePoints);
+            int lifePointsComparison = this.LifePoints.CompareTo(other.
+                LifePoints);
             if (lifePointsComparison != 0)
             {
                 return lifePointsComparison;
@@ -71,7 +72,8 @@ namespace Laboras_3
             {
                 return defPointsComparison;
             }
-            return string.Compare(other.Name, this.Name, StringComparison.OrdinalIgnoreCase);
+            return string.Compare(other.Name, this.Name, StringComparison.
+                OrdinalIgnoreCase);
         }
 
         public Heroes Clone()
