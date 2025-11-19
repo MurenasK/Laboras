@@ -8,12 +8,30 @@ namespace Laboras4
 {
     class IOUtils
     {
+        /// <summary>
+        /// Regex skirtas žodžių paieškai
+        /// (lietuviški simboliai ir skaičiai įtraukti).
+        /// </summary>
         private static readonly Regex wordRegex =
             new Regex(@"[A-Za-zĄČĘĖĮŠŲŪŽąčęėįšųūž0-9]+", RegexOptions.Compiled);
 
-        private static readonly string punctuation = " ,.;:!?()-";
+        public static readonly string punctuation = " ,.;:!?()-";
 
+        /// <summary>
+        /// Informacinė klasė sakinių duomenims saugoti.
+        /// </summary>
+        private class SentenceInfo
+        {
+            public string Text;
+            public int Words;
+            public int Chars;
+            public int StartLine;
+        }
 
+        /// <summary>
+        /// Nuskaito failą ir suskaičiuoja,
+        /// kiek kartų pasikartoja kiekvienas žodis.
+        /// </summary>
         public static Dictionary<string, int> ReadWords(string filename)
         {
             Dictionary<string, int> counts = new Dictionary<string, int>();
@@ -35,19 +53,10 @@ namespace Laboras4
             return counts;
         }
 
-        public static void WriteStats(string fileName, Dictionary<string, int> stats)
-        {
-            using (StreamWriter writer = new StreamWriter(fileName, false, Encoding.UTF8))
-            {
-                var list = TaskUtils.ToList(stats);
-                TaskUtils.SortStatistics(list);
-
-                int limit = Math.Min(list.Count, 10);
-                for (int i = 0; i < limit; i++)
-                    writer.WriteLine($"{list[i].Key} {list[i].Value}");
-            }
-        }
-
+        /// <summary>
+        /// Perskaito failo eilutes ir grąžina suskaidytus
+        /// bei apdorotus žodžių masyvus.
+        /// </summary>
         public static List<List<string>> ReadWordLines(string filename)
         {
             List<List<string>> result = new List<List<string>>();
@@ -57,8 +66,8 @@ namespace Laboras4
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    var tokens = Tokenize(line);
-                    var merged = MergeTokens(tokens);
+                    var tokens = TaskUtils.Tokenize(line);
+                    var merged = TaskUtils.MergeTokens(tokens);
 
                     if (merged.Count > 0)
                         result.Add(merged);
@@ -67,51 +76,13 @@ namespace Laboras4
 
             return result;
         }
-        // pataisymui kablelis ir ilgiausias sakinys ir kai kableliai pranesimas kad nera
 
-        private static List<string> Tokenize(string line)
-        {
-            line = Regex.Replace(
-                line,
-                @"([" + Regex.Escape(punctuation) + @"])\1+",
-                "$1"
-            );
-
-            var matches = Regex.Matches(
-                line,
-                @"[A-Za-zĄČĘĖĮŠŲŪŽąčęėįšųūž0-9]+|[" + Regex.Escape(punctuation) + "]+"
-            );
-
-            List<string> tokens = new List<string>();
-            foreach (Match m in matches)
-                tokens.Add(m.Value);
-
-            return tokens;
-        }
-
-        private static List<string> MergeTokens(List<string> tokens)
-        {
-            List<string> merged = new List<string>();
-
-            foreach (var tok in tokens)
-            {
-                if (char.IsLetterOrDigit(tok[0]))
-                {
-                    merged.Add(tok);
-                }
-                else
-                {
-                    if (merged.Count > 0)
-                        merged[merged.Count - 1] += tok;
-                    else
-                        merged.Add(tok);
-                }
-            }
-
-            return merged;
-        }
-
-        public static void WriteAlignedLines(string output, List<List<string>> lines, int[] colPos)
+        /// <summary>
+        /// Išveda tekstą į failą taip, kad stulpeliai būtų
+        /// sulygiuoti pagal colPos.
+        /// </summary>
+        public static void WriteAlignedLines(string output,
+            List<List<string>> lines, int[] colPos)
         {
             using (StreamWriter writer = new StreamWriter(output))
             {
@@ -123,7 +94,7 @@ namespace Laboras4
                     {
                         int target = colPos[i] - 1;
 
-                        while (sb.Length < target)
+                        while (sb.Length < target - 1)
                             sb.Append(' ');
 
                         sb.Append(line[i]);
@@ -131,6 +102,131 @@ namespace Laboras4
 
                     writer.WriteLine(sb.ToString().TrimEnd());
                 }
+            }
+        }
+
+        /// <summary>
+        /// Grąžina 10 dažniausiai pasitaikančių žodžių iš failo.
+        /// </summary>
+        private static List<KeyValuePair<string, int>>
+            GetTopWords(string inputFile)
+        {
+            var wordCounts = ReadWords(inputFile);
+            var list = TaskUtils.ToList(wordCounts);
+            TaskUtils.SortStatistics(list);
+
+            int limit = Math.Min(10, list.Count);
+            return list.GetRange(0, limit);
+        }
+
+        /// <summary>
+        /// Suranda ilgiausius sakinius faile pagal žodžių ir simbolių skaičių.
+        /// </summary>
+        private static List<SentenceInfo> FindLongestSentences(string inputFile)
+        {
+            string[] lines = File.ReadAllLines(inputFile);
+            string fullText = string.Join("\n", lines);
+
+            Regex sentenceRegex = new Regex(@"[^\.!?]+[\.!?]",
+                RegexOptions.Multiline);
+            var matches = sentenceRegex.Matches(fullText);
+
+            List<SentenceInfo> results = new List<SentenceInfo>();
+
+            int maxWords = 0;
+            int maxChars = 0;
+
+            foreach (Match m in matches)
+            {
+                string s = m.Value.Trim();
+
+                int wordCount = Regex.Matches(s,
+                    @"[A-Za-zĄČĘĖĮŠŲŪŽąčęėįšųūž0-9]+").Count;
+
+                int charCount = s.Length;
+
+                int index = fullText.IndexOf(s);
+                int startLine = fullText.Substring(0, index).Split('\n').Length;
+
+                if (wordCount > maxWords || (wordCount == maxWords &&
+                    charCount > maxChars))
+                {
+                    maxWords = wordCount;
+                    maxChars = charCount;
+
+                    results.Clear();
+                    results.Add(new SentenceInfo
+                    {
+                        Text = s,
+                        Words = wordCount,
+                        Chars = charCount,
+                        StartLine = startLine
+                    });
+                }
+                else if (wordCount == maxWords && charCount == maxChars)
+                {
+                    results.Add(new SentenceInfo
+                    {
+                        Text = s,
+                        Words = wordCount,
+                        Chars = charCount,
+                        StartLine = startLine
+                    });
+                }
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// Įrašo dažniausius žodžius į rezultatų failą.
+        /// </summary>
+        private static void WriteTopWords(StreamWriter w,
+            List<KeyValuePair<string, int>> topWords)
+        {
+            if (topWords.Count == 0) return;
+
+            w.WriteLine("DAŽNIAUSI ŽODŽIAI:");
+            foreach (var p in topWords)
+                w.WriteLine($"{p.Key} {p.Value}");
+            w.WriteLine();
+        }
+
+        /// <summary>
+        /// Įrašo ilgiausius sakinius į rezultatų failą.
+        /// </summary>
+        private static void WriteLongestSentences(StreamWriter w,
+            List<SentenceInfo> sentences)
+        {
+            if (sentences.Count == 0)
+            {
+                w.WriteLine("Neaptikta žodžių");
+                return;
+            }
+
+            w.WriteLine("ILGIAUSIAS SAKINYS/IAI:");
+            foreach (var s in sentences)
+            {
+                w.WriteLine(s.Text);
+                w.WriteLine($"Žodžių kiekis: {s.Words}");
+                w.WriteLine($"Simbolių kiekis: {s.Chars}");
+                w.WriteLine($"Sakinio pradžios eilutė: {s.StartLine}");
+                w.WriteLine();
+            }
+        }
+
+        /// <summary>
+        /// Generuoja visus rodiklius: dažniausius žodžius ir ilgiausius sakinius.
+        /// </summary>
+        public static void WriteIndicators(string inputFile, string outputFile)
+        {
+            var topWords = GetTopWords(inputFile);
+            var longestSentences = FindLongestSentences(inputFile);
+
+            using (StreamWriter w = new StreamWriter(outputFile))
+            {
+                WriteTopWords(w, topWords);
+                WriteLongestSentences(w, longestSentences);
             }
         }
     }

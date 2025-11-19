@@ -12,8 +12,9 @@ namespace Laboras4
             string outputFile = "ManoKnyga.txt";
 
             var counts = IOUtils.ReadWords(inputFile);
-            IOUtils.WriteStats(statsFile, counts);
             TaskUtils.RebuildText(inputFile, outputFile);
+            IOUtils.WriteIndicators(inputFile, statsFile);
+
         }
     }
 }
