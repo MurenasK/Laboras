@@ -14,7 +14,7 @@ namespace Laboras4
             string statsFile = "Rodikliai.txt";
             string outputFile = "ManoKnyga.txt";
 
-            var counts = TaskUtils.ReadWords(inputFile);
+            var counts = IOUtils.ReadWords(inputFile);
             IOUtils.WriteStats(statsFile, counts);
             TaskUtils.RebuildText(inputFile, outputFile);
         }

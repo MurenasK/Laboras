@@ -3,45 +3,11 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using Laboras4;
+using System.Xml.Schema;
 
 public static class TaskUtils
 {
-    /// <summary>
-    //
-    /// </summary>
-    private static readonly Regex wordRegex =
-        new Regex(@"[A-Za-zĄČĘĖĮŠŲŪŽąčęėįšųūž]+", RegexOptions.Compiled);
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="filename"></param>
-    /// <returns></returns>
-    public static Dictionary<string, int> ReadWords(string filename)
-    {
-        Dictionary<string, int> counts = new Dictionary<string, int>();
-
-        using (StreamReader reader = new StreamReader(filename))
-        {
-            string line;
-
-            while ((line = reader.ReadLine()) != null)
-            {
-                foreach (Match m in wordRegex.Matches(line))
-                {
-                    string w = m.Value.ToLower();
-
-                    if (counts.ContainsKey(w))
-                        counts[w]++;
-                    else
-                        counts[w] = 1;
-                }
-            }
-        }
-
-        return counts;
-    }
-
     /// <summary>
     /// Puts everything To list
     /// </summary>
@@ -93,66 +59,44 @@ public static class TaskUtils
     /// <param name="output"></param>
     public static void RebuildText(string input, string output)
     {
-        List<List<string>> allLines = new List<List<string>>();
+        var allLines = IOUtils.ReadWordLines(input);
+        int maxCols = GetMaxColumnCount(allLines);
+        int[] pos = CalculateColumnPositions(allLines, maxCols);
+        IOUtils.WriteAlignedLines(output, allLines, pos);
+    }
 
-        using (StreamReader reader = new StreamReader(input))
+    private static int GetMaxColumnCount(List<List<string>> allLines)
+    {
+        int max = 0;
+        foreach (var line in allLines)
         {
-            string line;
-
-            while ((line = reader.ReadLine()) != null)
-            {
-                List<string> words = new List<string>();
-
-                foreach (Match m in wordRegex.Matches(line))
-                    words.Add(m.Value);
-
-                if (words.Count > 0)
-                    allLines.Add(words);
-            }
+            if (line.Count > max)
+                max = line.Count;
         }
+        return max;
+    }
 
-        int maxCols = 0;
-        for (int i = 0; i < allLines.Count; i++)
-            if (allLines[i].Count > maxCols)
-                maxCols = allLines[i].Count;
-
+    private static int[] CalculateColumnPositions(List<List<string>> 
+        allLines, int maxCols)
+    {
         int[] pos = new int[maxCols];
         pos[0] = 1;
-
-        for (int c = 1; c < maxCols; c++)
+        for(int i = 1; i < maxCols; i++)
         {
             int maxLen = 0;
-
-            for (int r = 0; r < allLines.Count; r++)
+            for(int j = 0; j < allLines.Count; j++)
             {
-                if (allLines[r].Count > c - 1)
+                if(allLines[j].Count > i - 1)
                 {
-                    int len = allLines[r][c - 1].Length;
-                    if (len > maxLen) maxLen = len;
+                    int len = allLines[j][i - 1].Length;
+                    if (len > maxLen)
+                    {
+                        maxLen = len;
+                    }
                 }
             }
-
-            pos[c] = pos[c - 1] + maxLen + 1;
+            pos[i] = pos[i - 1] + maxLen + 1;
         }
-
-        using (StreamWriter writer = new StreamWriter(output))
-        {
-            for (int i = 0; i < allLines.Count; i++)
-            {
-                List<string> line = allLines[i];
-                StringBuilder sb = new StringBuilder();
-
-                for (int c = 0; c < line.Count; c++)
-                {
-                    int target = pos[c] - 1;
-                    while (sb.Length < target)
-                        sb.Append(' ');
-
-                    sb.Append(line[c]);
-                }
-
-                writer.WriteLine(sb.ToString().TrimEnd());
-            }
-        }
+        return pos;
     }
 }
