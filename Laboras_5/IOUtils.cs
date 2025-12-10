@@ -199,30 +199,27 @@ namespace Laboras_5
         {
             PlayerContainer[] copy = DeepCopyArray(containers);
 
-            Player strongest = null;
-            string race = "";
-            int best = int.MinValue;
+            // Logika iškelta į PlayerContainer
+            int maxStrength = PlayerContainer.GetGlobalMaxHeroStrength(copy);
+            var heroes = PlayerContainer.GetHeroesWithStrength(copy, maxStrength);
 
-            for (int i = 0; i < copy.Length; i++)
-            {
-                Player h = copy[i].GetStrongestHero();
-                if (h == null) continue;
-
-                int power = copy[i].GetHeroStrength(h);
-
-                if (power > best)
-                {
-                    best = power;
-                    strongest = h;
-                    race = copy[i].Race;
-                }
-            }
-
-            Console.WriteLine("\n===== Stipriausias herojus =====");
-            Console.WriteLine("Rasė: " + race);
-            Console.WriteLine("Stiprumas: " + best);
-            Console.WriteLine(strongest.ToString());
+            // Čia tik spausdiname
+            PrintHeroes(heroes, maxStrength);
         }
+
+        private static void PrintHeroes(List<(Player hero, string race)> list, int strength)
+        {
+            Console.WriteLine("\n===== Stipriausi herojai =====");
+            Console.WriteLine("Stiprumas: " + strength);
+
+            foreach (var entry in list)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Rasė: " + entry.race);
+                Console.WriteLine(entry.hero.ToString());
+            }
+        }
+
 
 
         // ============================================================

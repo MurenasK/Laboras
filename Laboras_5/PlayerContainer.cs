@@ -164,6 +164,43 @@ namespace Laboras_5
             return bestHero;
         }
 
+        public static int GetGlobalMaxHeroStrength(PlayerContainer[] containers)
+        {
+            int best = int.MinValue;
+
+            for (int i = 0; i < containers.Length; i++)
+            {
+                Player h = containers[i].GetStrongestHero();
+                if (h == null) continue;
+
+                int s = containers[i].GetHeroStrength(h);
+                if (s > best)
+                    best = s;
+            }
+
+            return best;
+        }
+
+        public static List<(Player hero, string race)>
+            GetHeroesWithStrength(PlayerContainer[] containers, int strength)
+        {
+            List<(Player hero, string race)> result = new List<(Player hero,
+                string race)>();
+
+            for (int i = 0; i < containers.Length; i++)
+            {
+                Player h = containers[i].GetStrongestHero();
+                if (h == null) continue;
+
+                int s = containers[i].GetHeroStrength(h);
+                if (s == strength)
+                    result.Add((h, containers[i].Race));
+            }
+
+            return result;
+        }
+
+
         // =====================================================
         // FULL CONTAINER DEEP COPY
         // =====================================================
