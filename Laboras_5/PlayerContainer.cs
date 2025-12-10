@@ -5,24 +5,30 @@ namespace Laboras_5
 {
     public class PlayerContainer
     {
+        /// <summary>
+        /// Žaidėjų sąrašas (saugomas vidinis sąrašas).
+        /// </summary>
         private List<Player> players;
 
-        public string Race { get; set; } // Naikinti 
-        public string City { get; set; }
-
+        /// <summary>
+        /// Inicializuoja tuščią PlayerContainer objektą.
+        /// </summary>
         public PlayerContainer()
         {
             players = new List<Player>();
         }
 
+        /// <summary>
+        /// Prideda žaidėją į konteinerį, naudojant jo kopiją.
+        /// </summary>
         public void AddPlayer(Player player)
         {
-            players.Add(player); // clonus dadet
+            players.Add(player.Clone());
         }
 
-        // =====================================================
-        // DEEP COPY RETURN
-        // =====================================================
+        /// <summary>
+        /// Grąžina gilią žaidėjų sąrašo kopiją.
+        /// </summary>
         public List<Player> GetPlayers()
         {
             List<Player> copy = new List<Player>();
@@ -33,13 +39,13 @@ namespace Laboras_5
             return copy;
         }
 
-        // =====================================================
-        // MAX LIFE
-        // =====================================================
+        /// <summary>
+        /// Grąžina didžiausią gyvybių (Life) reikšmę tarp visų žaidėjų.
+        /// </summary>
         public int GetMaxLife()
         {
             int max = 0;
-            List<Player> list = GetPlayers(); // deep copy
+            List<Player> list = GetPlayers();
 
             for (int i = 0; i < list.Count; i++)
                 if (list[i].Life > max)
@@ -48,10 +54,13 @@ namespace Laboras_5
             return max;
         }
 
+        /// <summary>
+        /// Grąžina visus žaidėjus, kurių Life atitinka nurodytą reikšmę.
+        /// </summary>
         public List<Player> GetPlayersWithLife(int life)
         {
             List<Player> result = new List<Player>();
-            List<Player> list = GetPlayers(); // deep copy
+            List<Player> list = GetPlayers();
 
             for (int i = 0; i < list.Count; i++)
                 if (list[i].Life == life)
@@ -60,29 +69,31 @@ namespace Laboras_5
             return result;
         }
 
-        // =====================================================
-        // SORTING — works on deep copy list
-        // =====================================================
-        // Burbaulas while reikia
+        /// <summary>
+        /// Surūšiuoja žaidėjų sąrašą pagal pateiktą PlayerComparator.
+        /// </summary>
         public void Sort(List<Player> list, PlayerComparator comparator)
         {
-            for (int i = 0; i < list.Count - 1; i++) // cia
+            int i = 1;
+
+            while (i < list.Count)
             {
-                for (int j = 0; j < list.Count - 1 - i; j++)
+                Player current = list[i];
+                int j = i - 1;
+                while (j >= 0 && comparator.Compare(list[j], current) > 0)
                 {
-                    if (comparator.Compare(list[j], list[j + 1]) > 0)
-                    {
-                        Player tmp = list[j];
-                        list[j] = list[j + 1];
-                        list[j + 1] = tmp;
-                    }
+                    list[j + 1] = list[j];
+                    j--;
                 }
+
+                list[j + 1] = current;
+                i++;
             }
         }
 
-        // =====================================================
-        // CLASS COLLECTION USING DEEP COPY
-        // =====================================================
+        /// <summary>
+        /// Grąžina unikalių HERO klasės pavadinimų sąrašą.
+        /// </summary>
         public List<string> GetHeroClasses()
         {
             List<string> result = new List<string>();
@@ -95,6 +106,9 @@ namespace Laboras_5
             return result;
         }
 
+        /// <summary>
+        /// Grąžina unikalių NPC klasės pavadinimų sąrašą.
+        /// </summary>
         public List<string> GetNpcClasses()
         {
             List<string> result = new List<string>();
@@ -107,9 +121,9 @@ namespace Laboras_5
             return result;
         }
 
-        // =====================================================
-        // MISSING CLASS SEARCH — uses deep copy lists
-        // =====================================================
+        /// <summary>
+        /// Grąžina HERO klases, kurių trūksta šiame konteineryje.
+        /// </summary>
         public List<string> GetMissingHeroClasses(List<string> allClasses)
         {
             List<string> existing = GetHeroClasses();
@@ -122,6 +136,9 @@ namespace Laboras_5
             return missing;
         }
 
+        /// <summary>
+        /// Grąžina NPC klases, kurių trūksta šiame konteineryje.
+        /// </summary>
         public List<string> GetMissingNpcClasses(List<string> allClasses)
         {
             List<string> existing = GetNpcClasses();
@@ -134,20 +151,23 @@ namespace Laboras_5
             return missing;
         }
 
-        // =====================================================
-        // HERO STRENGTH
-        // =====================================================
+        /// <summary>
+        /// Apskaičiuoja herojaus stiprumą pagal (Life + Armor - Dmg).
+        /// </summary>
         public int GetHeroStrength(Player p)
         {
             return p.Life + p.Armor - p.Dmg;
         }
 
+        /// <summary>
+        /// Grąžina stipriausią herojų šiame konteineryje.
+        /// </summary>
         public Player GetStrongestHero()
         {
             Player bestHero = null;
             int best = int.MinValue;
 
-            List<Player> list = GetPlayers(); // deep copy
+            List<Player> list = GetPlayers();
 
             for (int i = 0; i < list.Count; i++)
             {
@@ -165,6 +185,9 @@ namespace Laboras_5
             return bestHero;
         }
 
+        /// <summary>
+        /// Randa didžiausią herojaus stiprumą visų konteinerių masyve.
+        /// </summary>
         public int GetGlobalMaxHeroStrength(PlayerContainer[] containers)
         {
             int best = int.MinValue;
@@ -182,11 +205,13 @@ namespace Laboras_5
             return best;
         }
 
-        public static List<(Player hero, string race)>
-            GetHeroesWithStrength(PlayerContainer[] containers, int strength)
+        /// <summary>
+        /// Grąžina visus herojus, kurių stiprumas lygus nurodytai reikšmei.
+        /// </summary>
+        public List<Player> GetHeroesWithStrength(PlayerContainer[] containers,
+            int strength)
         {
-            List<(Player hero, string race)> result = new List<(Player hero,
-                string race)>();
+            List<Player> result = new List<Player>();
 
             for (int i = 0; i < containers.Length; i++)
             {
@@ -195,29 +220,100 @@ namespace Laboras_5
 
                 int s = containers[i].GetHeroStrength(h);
                 if (s == strength)
-                    result.Add((h, containers[i].Race));
+                    result.Add(h);
             }
 
             return result;
         }
 
-
-        // =====================================================
-        // FULL CONTAINER DEEP COPY
-        // =====================================================
+        /// <summary>
+        /// Sukuria gilią PlayerContainer kopiją.
+        /// </summary>
         public PlayerContainer DeepCopy()
         {
             PlayerContainer copy = new PlayerContainer();
-
-            copy.Race = this.Race;
-            copy.City = this.City;
-
-            List<Player> list = this.GetPlayers(); // deep copy
+            List<Player> list = this.GetPlayers();
 
             for (int i = 0; i < list.Count; i++)
-                copy.AddPlayer(list[i]); // already cloned
+                copy.AddPlayer(list[i]);
 
             return copy;
+        }
+
+        /// <summary>
+        /// Surenka visas HERO klases iš pateiktų konteinerių masyvo.
+        /// </summary>
+        public List<string> CollectAllHeroClasses(PlayerContainer[] containers)
+        {
+            List<string> list = new List<string>();
+
+            for (int i = 0; i < containers.Length; i++)
+            {
+                foreach (string cls in containers[i].GetHeroClasses())
+                    if (!list.Contains(cls))
+                        list.Add(cls);
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// Surenka visas NPC klases iš pateiktų konteinerių masyvo.
+        /// </summary>
+        public List<string> CollectAllNpcClasses(PlayerContainer[] containers)
+        {
+            List<string> list = new List<string>();
+
+            for (int i = 0; i < containers.Length; i++)
+            {
+                foreach (string cls in containers[i].GetNpcClasses())
+                    if (!list.Contains(cls))
+                        list.Add(cls);
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// Surenka visus žaidėjus, kurių Armor didesnis už Dmg.
+        /// </summary>
+        public List<Player> CollectStrongPlayers(PlayerContainer[] containers)
+        {
+            List<Player> result = new List<Player>();
+
+            for (int i = 0; i < containers.Length; i++)
+            {
+                List<Player> list = containers[i].GetPlayers();
+
+                for (int j = 0; j < list.Count; j++)
+                {
+                    if (list[j].Armor > list[j].Dmg)
+                        result.Add(list[j]);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Apskaičiuoja gynybos (Armor) medianą žaidėjų sąraše.
+        /// </summary>
+        public int CalculateArmorMedian(List<Player> list)
+        {
+            if (list == null || list.Count == 0)
+                return 0;
+
+            list.Sort((p1, p2) => p1.Armor.CompareTo(p2.Armor));
+
+            int count = list.Count;
+
+            if (count % 2 == 1)
+                return list[count / 2].Armor;
+
+            int a = list[count / 2 - 1].Armor;
+            int b = list[count / 2].Armor;
+
+            return (a + b) / 2;
         }
     }
 }

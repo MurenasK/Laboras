@@ -8,6 +8,10 @@ namespace Laboras_5
 {
     class PlayerComparatorByArmorDamage : PlayerComparator
     {
+        /// <summary>
+        /// Palygina du žaidėjus: pirmiausia pagal gynybos (Armor) reikšmę,
+        /// o esant vienodai gynybai – pagal puolimo (Dmg) reikšmę.
+        /// </summary>
         public override int Compare(Player player1, Player player2)
         {
             int result = player1.Armor.CompareTo(player2.Armor);

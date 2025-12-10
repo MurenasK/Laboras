@@ -9,12 +9,16 @@ namespace Laboras_5
 {
     internal class Program
     {
+        /// <summary>
+        /// Programos įėjimo taškas. Vykdo duomenų nuskaitymą, analizę
+        /// ir rezultatų išvedimą.
+        /// </summary>
         static void Main(string[] args)
         {
-            string[] players = { "players4.csv", "players5.csv", "players6.csv"};
+            string[] players = { "players1.csv", "players2.csv", "players3.csv" };
             PlayerContainer[] groups = IOUtils.ReadPlayersFromFile(players);
 
-            IOUtils.PrintPlayersToFile(groups, "AllPlayers.txt");
+            IOUtils.PrintPlayersToFile(groups, "PradDuomenys.txt");
 
             IOUtils.PrintConsoleBestLifePlayerInEachFile(groups);
 

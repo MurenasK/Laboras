@@ -7,10 +7,9 @@ namespace Laboras_5
 {
     class IOUtils
     {
-        // ============================================================
-        // 1. FILE READING
-        // ============================================================
-
+        /// <summary>
+        /// Nuskaito žaidėjus iš kelių failų ir grąžina PlayerContainer masyvą.
+        /// </summary>
         public static PlayerContainer[] ReadPlayersFromFile(string[] fileNames)
         {
             PlayerContainer[] containers = new PlayerContainer[fileNames.Length];
@@ -21,14 +20,19 @@ namespace Laboras_5
             return containers;
         }
 
+        /// <summary>
+        /// Nuskaito žaidėjų duomenis iš vieno failo ir suformuoja
+        /// PlayerContainer objektą.
+        /// </summary>
         public static PlayerContainer ReadPlayers(string fileName)
         {
             PlayerContainer container = new PlayerContainer();
 
-            using (StreamReader reader = new StreamReader(fileName, Encoding.UTF8))
+            using (StreamReader reader = new StreamReader(fileName,
+                Encoding.UTF8))
             {
-                container.Race = reader.ReadLine();
-                container.City = reader.ReadLine();
+                string Rase = reader.ReadLine();
+                string City = reader.ReadLine();
 
                 string line;
                 while ((line = reader.ReadLine()) != null)
@@ -50,43 +54,57 @@ namespace Laboras_5
                         int iq = int.Parse(parts[9]);
                         int spec = int.Parse(parts[10]);
 
-                        Heroes hero = new Heroes(name, cls, life, mana, dmg, armor,
-                                                 power, movement, iq);
-                        hero.Race = container.Race;
+                        Heroes hero = new Heroes(name, cls, life, mana, dmg,
+                            armor,
+                            power, movement, iq);
+                        hero.Race = Rase;
+                        hero.City = City;
                         container.AddPlayer(hero);
                     }
                     else if (type == "NPC")
                     {
                         int special = int.Parse(parts[7]);
 
-                        NPC npc = new NPC(name, cls, life, mana, dmg, armor, special);
-                        npc.Race = container.Race;
+                        NPC npc = new NPC(name, cls, life, mana, dmg, armor,
+                            special);
+                        npc.Race = Rase;
+                        npc.City = City;
                         container.AddPlayer(npc);
                     }
                 }
             }
-
             return container;
         }
 
-
-        // ============================================================
-        // 2. PRINT PLAYERS TO FILE (NO DATA MODIFICATION)
-        // ============================================================
-
-        public static void PrintPlayersToFile(PlayerContainer[] containers, string fileName)
+        /// <summary>
+        /// Išveda visų žaidėjų informaciją į tekstinį failą lentelės formatu.
+        /// </summary>
+        public static void PrintPlayersToFile(PlayerContainer[] containers,
+            string fileName)
         {
             List<string> output = new List<string>();
 
             for (int i = 0; i < containers.Length; i++)
             {
-                PlayerContainer cont = containers[i].DeepCopy(); // SAFE COPY
+                PlayerContainer cont = containers[i].DeepCopy();
 
-                output.Add(cont.Race);
-                output.Add(cont.City);
+                var players = cont.GetPlayers();
+                string race = players.Count > 0 ? players[0].Race : "Nežinoma";
+                string city = players.Count > 0 ? players[0].City : "Nežinomas";
+
+                output.Add(race);
+                output.Add(city);
+                output.Add(new string('=', 180));
+                output.Add(string.Format(
+    "| {0,-10} | {1,-20} | {2,-15} | {3,-15} | {4,10} | {5,10} | {6,10} |" +
+    " {7,10} | {8,10} | {9,10} | {10,10} | {11,10} |",
+    "Tipas", "Vardas", "Klasė", "Rasė", "Gyvybės", "Ištvermė",
+    "Puolimas", "Gynyba",
+    "Jėga", "Greitis", "IQ", "Special"
+));
                 output.Add(new string('=', 180));
 
-                foreach (Player p in cont.GetPlayers())
+                foreach (Player p in players)
                     output.Add(p.ToString());
 
                 output.Add(new string('=', 180));
@@ -96,12 +114,12 @@ namespace Laboras_5
             File.WriteAllLines(fileName, output, Encoding.UTF8);
         }
 
-
-        // ============================================================
-        // 3. BEST LIFE PLAYERS PER FILE
-        // ============================================================
-
-        public static void PrintConsoleBestLifePlayerInEachFile(PlayerContainer[] containers)
+        /// <summary>
+        /// Išveda į konsolę žaidėjus su didžiausiu gyvybių kiekiu
+        /// kiekviename faile.
+        /// </summary>
+        public static void PrintConsoleBestLifePlayerInEachFile(
+            PlayerContainer[] containers)
         {
             Console.WriteLine("\n=== Žaidėjai su didžiausiu gyvybių kiekiu ===\n");
 
@@ -112,47 +130,64 @@ namespace Laboras_5
                 int maxLife = cont.GetMaxLife();
                 List<Player> best = cont.GetPlayersWithLife(maxLife);
 
-                Console.WriteLine($"Rasė: {cont.Race}, Miestas: {cont.City}");
+                var players = cont.GetPlayers();
+                string race = players.Count > 0 ? players[0].Race : "Nežinoma";
+                string city = players.Count > 0 ? players[0].City : "Nežinomas";
+
+                Console.WriteLine($"Rasė: {race}, Miestas: {city}");
+                Console.WriteLine("| {0,-10} | {1,-20} | {2,-15} | {3,-15}" +
+                    " | {4,10} | {5,10} | {6,10} |" +
+                    " {7,10} | {8,10} | {9,10} | {10,10} | {11,10} |",
+                    "Tipas", "Vardas", "Klasė", "Rasė", "Gyvybės", "Ištvermė",
+                    "Puolimas", "Gynyba",
+                    "Jėga", "Greitis", "IQ", "Special");
 
                 foreach (Player p in best)
                     Console.WriteLine(p);
+
                 Console.WriteLine();
             }
         }
 
-
-        // ============================================================
-        // 4. STIPRIAUSI VEIKĖJAI (ARMOR > DAMAGE + MEDIANA)
-        // ============================================================
-
-        public static void PrintPlayersWithMoreDefThanDmg(PlayerContainer[] containers)
+        /// <summary>
+        /// Surenka visus žaidėjus, kurių gynyba viršija puolimą,
+        /// ir išveda juos į CSV failą.
+        /// </summary>
+        public static void PrintPlayersWithMoreDefThanDmg(
+            PlayerContainer[] containers)
         {
             PlayerContainer[] copy = DeepCopyArray(containers);
 
-            List<Player> selected = CollectStrongPlayers(copy);
+            PlayerContainer helper = new PlayerContainer();
+
+            List<Player> selected = helper.CollectStrongPlayers(copy);
 
             if (selected.Count == 0)
             {
-                File.WriteAllText("StipriausiVeikejai.csv", "Nera stipriausiu veikeju");
+                File.WriteAllText("StipriausiVeikejai.csv",
+                    "Nera stipriausiu veikeju");
                 return;
             }
 
-            // rikiavimas naudojant comparator
             copy[0].Sort(selected, new PlayerComparatorByArmorDamage());
 
-            int median = CalculateArmorMedian(selected);
+            int median = helper.CalculateArmorMedian(selected);
 
             List<string> lines = new List<string>();
+            lines.Add("Tipas,Vardas,Klase,Rase,Gyvybes,Istverme,Puolimas" +
+                ",Gynyba,Jega,Greitis,IQ,Special");
             foreach (Player p in selected)
                 lines.Add(p.ToCsvString());
 
             lines.Add("");
-            lines.Add("Gynybos taškų mediana: " + median);
+            lines.Add("Gynybos taškų mediana: " + ";" + median);
 
             File.WriteAllLines("StipriausiVeikejai.csv", lines, Encoding.UTF8);
         }
 
-
+        /// <summary>
+        /// Sukuria PlayerContainer masyvo gilią kopiją.
+        /// </summary>
         private static PlayerContainer[] DeepCopyArray(PlayerContainer[] original)
         {
             PlayerContainer[] arr = new PlayerContainer[original.Length];
@@ -162,78 +197,55 @@ namespace Laboras_5
 
             return arr;
         }
-        // Conteineris
-        private static List<Player> CollectStrongPlayers(PlayerContainer[] containers)
-        {
-            List<Player> result = new List<Player>();
 
-            for (int i = 0; i < containers.Length; i++)
-            {
-                List<Player> list = containers[i].GetPlayers();
-
-                for (int j = 0; j < list.Count; j++)
-                    if (list[j].Armor > list[j].Dmg)
-                        result.Add(list[j]);
-            }
-
-            return result;
-        }
-        // Conteineris
-        private static int CalculateArmorMedian(List<Player> list)
-        {
-            int count = list.Count;
-
-            if (count % 2 == 1)
-                return list[count / 2].Armor;
-
-            int a = list[count / 2 - 1].Armor;
-            int b = list[count / 2].Armor;
-
-            return (a + b) / 2;
-        }
-
-
-        // ============================================================
-        // 5. STRONGEST HERO ACROSS ALL RACES
-        // ============================================================
-
+        /// <summary>
+        /// Randa stipriausią herojų pagal jėgos atributą ir išveda jį į konsolę.
+        /// </summary>
         public static void PrintStrongestHero(PlayerContainer[] containers)
         {
+            PlayerContainer helper = new PlayerContainer();
             PlayerContainer[] copy = DeepCopyArray(containers);
 
-            // Logika iškelta į PlayerContainer
-            int maxStrength = PlayerContainer.GetGlobalMaxHeroStrength(copy);
-            var heroes = PlayerContainer.GetHeroesWithStrength(copy, maxStrength);
+            int maxStrength = helper.GetGlobalMaxHeroStrength(copy);
+            var heroes = helper.GetHeroesWithStrength(copy, maxStrength);
 
-            // Čia tik spausdiname
             PrintHeroes(heroes, maxStrength);
         }
 
-        private static void PrintHeroes(List<(Player hero, string race)> list, int strength)
+        /// <summary>
+        /// Išveda sąrašą herojų su nurodyta jėga į konsolę.
+        /// </summary>
+        private static void PrintHeroes(List<Player> list, int strength)
         {
             Console.WriteLine("\n===== Stipriausi herojai =====");
             Console.WriteLine("Stiprumas: " + strength);
 
-            foreach (var entry in list)
+            foreach (var hero in list)
             {
                 Console.WriteLine();
-                Console.WriteLine("Rasė: " + entry.race);
-                Console.WriteLine(entry.hero.ToString());
+                Console.WriteLine("Rasė: " + hero.Race);
+                Console.WriteLine("| {0,-10} | {1,-20} | {2,-15} | {3,-15}" +
+                    " | {4,10} | {5,10} | {6,10} |" +
+    " {7,10} | {8,10} | {9,10} | {10,10} | {11,10} |",
+    "Tipas", "Vardas", "Klasė", "Rasė", "Gyvybės", "Ištvermė",
+    "Puolimas", "Gynyba",
+    "Jėga", "Greitis", "IQ", "Special");
+                Console.WriteLine(hero.ToString());
             }
         }
 
-
-
-        // ============================================================
-        // 6. FIND MISSING HERO / NPC CLASSES
-        // ============================================================
-
+        /// <summary>
+        /// Aptinka, kurios HERO ir NPC klasės yra praleistos kiekviename faile,
+        /// ir įrašo rezultatus į CSV.
+        /// </summary>
         public static void FindMissingClasses(PlayerContainer[] containers)
         {
             PlayerContainer[] copy = DeepCopyArray(containers);
 
-            List<string> allHero = CollectAllHeroClasses(copy);
-            List<string> allNpc = CollectAllNpcClasses(copy);
+            PlayerContainer helper = new PlayerContainer();
+
+            List<string> allHero = helper.CollectAllHeroClasses(copy);
+            List<string> allNpc = helper.CollectAllNpcClasses(copy);
 
             List<string> output = new List<string>();
 
@@ -244,40 +256,22 @@ namespace Laboras_5
                 var missingHero = cont.GetMissingHeroClasses(allHero);
                 var missingNpc = cont.GetMissingNpcClasses(allNpc);
 
-                output.Add("Rasė: " + cont.Race);
-                output.Add("Trūkstamos HERO klasės: " +
-                    (missingHero.Count == 0 ? "Nėra" : string.Join("; ", missingHero)));
+                var players = cont.GetPlayers();
+                string race = players.Count > 0 ? players[0].Race : "Nežinoma";
 
-                output.Add("Trūkstamos NPC klasės: " +
-                    (missingNpc.Count == 0 ? "Nėra" : string.Join("; ", missingNpc)));
+                output.Add("Rasė: " + race);
+                output.Add("Trūkstamos HERO klasės: " + ";" +
+                    (missingHero.Count == 0 ? "Nėra" : string.Join("; ",
+                    missingHero)));
+
+                output.Add("Trūkstamos NPC klasės: " + ";" +
+                    (missingNpc.Count == 0 ? "Nėra" : string.Join("; ",
+                    missingNpc)));
 
                 output.Add("");
             }
 
             File.WriteAllLines("Trukstami.csv", output, Encoding.UTF8);
-        }
-
-        // Conteineris
-        private static List<string> CollectAllHeroClasses(PlayerContainer[] arr)
-        {
-            List<string> list = new List<string>();
-
-            for (int i = 0; i < arr.Length; i++)
-                foreach (string cls in arr[i].GetHeroClasses())
-                    if (!list.Contains(cls)) list.Add(cls);
-
-            return list;
-        }
-        // tas pats
-        private static List<string> CollectAllNpcClasses(PlayerContainer[] arr)
-        {
-            List<string> list = new List<string>();
-
-            for (int i = 0; i < arr.Length; i++)
-                foreach (string cls in arr[i].GetNpcClasses())
-                    if (!list.Contains(cls)) list.Add(cls);
-
-            return list;
         }
     }
 }
