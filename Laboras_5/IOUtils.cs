@@ -52,6 +52,7 @@ namespace Laboras_5
 
                         Heroes hero = new Heroes(name, cls, life, mana, dmg, armor,
                                                  power, movement, iq);
+                        hero.Race = container.Race;
                         container.AddPlayer(hero);
                     }
                     else if (type == "NPC")
@@ -59,6 +60,7 @@ namespace Laboras_5
                         int special = int.Parse(parts[7]);
 
                         NPC npc = new NPC(name, cls, life, mana, dmg, armor, special);
+                        npc.Race = container.Race;
                         container.AddPlayer(npc);
                     }
                 }
@@ -131,7 +133,7 @@ namespace Laboras_5
 
             if (selected.Count == 0)
             {
-                File.WriteAllText("StipriausiVeikejai.csv", "Nėra stipriausių veikėjų");
+                File.WriteAllText("StipriausiVeikejai.csv", "Nera stipriausiu veikeju");
                 return;
             }
 
@@ -142,7 +144,7 @@ namespace Laboras_5
 
             List<string> lines = new List<string>();
             foreach (Player p in selected)
-                lines.Add(p.ToString());
+                lines.Add(p.ToCsvString());
 
             lines.Add("");
             lines.Add("Gynybos taškų mediana: " + median);
@@ -160,7 +162,7 @@ namespace Laboras_5
 
             return arr;
         }
-
+        // Conteineris
         private static List<Player> CollectStrongPlayers(PlayerContainer[] containers)
         {
             List<Player> result = new List<Player>();
@@ -176,7 +178,7 @@ namespace Laboras_5
 
             return result;
         }
-
+        // Conteineris
         private static int CalculateArmorMedian(List<Player> list)
         {
             int count = list.Count;
@@ -244,10 +246,10 @@ namespace Laboras_5
 
                 output.Add("Rasė: " + cont.Race);
                 output.Add("Trūkstamos HERO klasės: " +
-                    (missingHero.Count == 0 ? "Nėra" : string.Join(", ", missingHero)));
+                    (missingHero.Count == 0 ? "Nėra" : string.Join("; ", missingHero)));
 
                 output.Add("Trūkstamos NPC klasės: " +
-                    (missingNpc.Count == 0 ? "Nėra" : string.Join(", ", missingNpc)));
+                    (missingNpc.Count == 0 ? "Nėra" : string.Join("; ", missingNpc)));
 
                 output.Add("");
             }
@@ -255,7 +257,7 @@ namespace Laboras_5
             File.WriteAllLines("Trukstami.csv", output, Encoding.UTF8);
         }
 
-
+        // Conteineris
         private static List<string> CollectAllHeroClasses(PlayerContainer[] arr)
         {
             List<string> list = new List<string>();
@@ -266,7 +268,7 @@ namespace Laboras_5
 
             return list;
         }
-
+        // tas pats
         private static List<string> CollectAllNpcClasses(PlayerContainer[] arr)
         {
             List<string> list = new List<string>();

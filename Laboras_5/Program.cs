@@ -11,7 +11,7 @@ namespace Laboras_5
     {
         static void Main(string[] args)
         {
-            string[] players = { "players1.csv", "players2.csv", "players3.csv"};
+            string[] players = { "players4.csv", "players5.csv", "players6.csv"};
             PlayerContainer[] groups = IOUtils.ReadPlayersFromFile(players);
 
             IOUtils.PrintPlayersToFile(groups, "AllPlayers.txt");

@@ -31,8 +31,14 @@ namespace Laboras_5
 
         public override Player Clone()
         {
-            return new Heroes(Name, Class, Life, Mana, Dmg, Armor,
-                              Power, MoveSpeed, IQ);
+            Heroes h = new Heroes(Name, Class, Life, Mana, Dmg, Armor, Power, MoveSpeed, IQ);
+            h.Race = this.Race;     // <----- PRIDĖTI
+            return h;
         }
+        public override string ToCsvString()
+        {
+            return $"{GetPlayerType()};{Name};{Class};{Race};{Life};{Mana};{Dmg};{Armor};{Power};{MoveSpeed};{IQ};-";
+        }
+            
     }
 }

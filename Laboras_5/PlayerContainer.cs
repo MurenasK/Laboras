@@ -7,7 +7,7 @@ namespace Laboras_5
     {
         private List<Player> players;
 
-        public string Race { get; set; }
+        public string Race { get; set; } // Naikinti 
         public string City { get; set; }
 
         public PlayerContainer()
@@ -17,7 +17,7 @@ namespace Laboras_5
 
         public void AddPlayer(Player player)
         {
-            players.Add(player);
+            players.Add(player); // clonus dadet
         }
 
         // =====================================================
@@ -63,9 +63,10 @@ namespace Laboras_5
         // =====================================================
         // SORTING — works on deep copy list
         // =====================================================
+        // Burbaulas while reikia
         public void Sort(List<Player> list, PlayerComparator comparator)
         {
-            for (int i = 0; i < list.Count - 1; i++)
+            for (int i = 0; i < list.Count - 1; i++) // cia
             {
                 for (int j = 0; j < list.Count - 1 - i; j++)
                 {
@@ -164,7 +165,7 @@ namespace Laboras_5
             return bestHero;
         }
 
-        public static int GetGlobalMaxHeroStrength(PlayerContainer[] containers)
+        public int GetGlobalMaxHeroStrength(PlayerContainer[] containers)
         {
             int best = int.MinValue;
 

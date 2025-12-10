@@ -22,12 +22,19 @@ namespace Laboras_5
         public override string ToString()
         {
             return string.Format("{0} {1,10} | {2,10} | {3,10} | {4, 10} |",
-                ToBaseString(), "-", "-", "-", SpecialAbility);
+                ToBaseString(), "-", "-", "-", SpecialAbility); // Taisyti toString
         }
 
         public override Player Clone()
         {
-            return new NPC(Name, Class, Life, Mana, Dmg, Armor, SpecialAbility);
+            NPC n = new NPC(Name, Class, Life, Mana, Dmg, Armor, SpecialAbility);
+            n.Race = this.Race;      // <----- PRIDĖTI
+            return n;
         }
+        public override string ToCsvString()
+        {
+            return $"{GetPlayerType()};{Name};{Class};{Race};{Life};{Mana};{Dmg};{Armor};-;-;-;{SpecialAbility}";
+        }
+
     }
 }
