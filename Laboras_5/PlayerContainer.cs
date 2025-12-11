@@ -74,22 +74,28 @@ namespace Laboras_5
         /// </summary>
         public void Sort(List<Player> list, PlayerComparator comparator)
         {
-            int i = 1;
-
-            while (i < list.Count)
+            int n = list.Count;
+            int i = 0;
+            bool swapped = true;
+            while (i < n - 1 && swapped)
             {
-                Player current = list[i];
-                int j = i - 1;
-                while (j >= 0 && comparator.Compare(list[j], current) > 0)
+                swapped = false;
+                for (int j = 0; j < n - i - 1; j++)
                 {
-                    list[j + 1] = list[j];
-                    j--;
+                    if (comparator.Compare(list[j], list[j + 1]) > 0)
+                    {
+                        Player temp = list[j];
+                        list[j] = list[j + 1];
+                        list[j + 1] = temp;
+
+                        swapped = true;
+                    }
                 }
 
-                list[j + 1] = current;
                 i++;
             }
         }
+
 
         /// <summary>
         /// Grąžina unikalių HERO klasės pavadinimų sąrašą.
